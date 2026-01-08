@@ -13,8 +13,10 @@ FROM base AS deps
 
 # Install dependencies based on the preferred package manager
 COPY package.json package-lock.json ./
+# Copy .npmrc if it exists to respect legacy-peer-deps setting
+COPY .npmrc* ./
 
-RUN npm ci
+RUN npm ci --legacy-peer-deps
 
 FROM base AS builder
 
