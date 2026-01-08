@@ -42,16 +42,16 @@ git push origin main
 
 1. Go to [hub.docker.com](https://hub.docker.com)
 2. Login and go to your repositories
-3. Find `raheed-app`
+3. Find `adex`
 4. You should see tags: `latest`, `main`, `main-{sha}`
 
 ## 📦 Image Location
 
 Your images will be available at:
 ```
-docker.io/YOUR_DOCKER_USERNAME/raheed-app:latest
-docker.io/YOUR_DOCKER_USERNAME/raheed-app:main
-docker.io/YOUR_DOCKER_USERNAME/raheed-app:main-{commit-sha}
+docker.io/YOUR_DOCKER_USERNAME/adex:latest
+docker.io/YOUR_DOCKER_USERNAME/adex:main
+docker.io/YOUR_DOCKER_USERNAME/adex:main-{commit-sha}
 ```
 
 ## 🔄 Manual Trigger
@@ -68,7 +68,7 @@ You can manually trigger the build:
 ### Pull the Image
 
 ```bash
-docker pull YOUR_DOCKER_USERNAME/raheed-app:latest
+docker pull YOUR_DOCKER_USERNAME/adex:latest
 ```
 
 ### Use in docker-compose.yml
@@ -78,7 +78,7 @@ Update your `docker-compose.yml`:
 ```yaml
 services:
   app:
-    image: YOUR_DOCKER_USERNAME/raheed-app:latest
+    image: YOUR_DOCKER_USERNAME/adex:latest
     # Remove build section
     # build:
     #   context: .
@@ -94,7 +94,7 @@ docker-compose up -d
 ## 🔍 Build Cache
 
 The workflow uses Docker Hub registry cache for faster builds:
-- Cache image: `YOUR_DOCKER_USERNAME/raheed-app:buildcache`
+- Cache image: `YOUR_DOCKER_USERNAME/adex:buildcache`
 - First build: Slower (no cache)
 - Subsequent builds: Faster (uses cache)
 
@@ -138,7 +138,7 @@ The workflow uses Docker Hub registry cache for faster builds:
 **Solution:**
 - First build always slower (no cache)
 - Subsequent builds use cache automatically
-- Cache is stored as `raheed-app:buildcache` on Docker Hub
+- Cache is stored as `adex:buildcache` on Docker Hub
 
 ### Image Not Appearing on Docker Hub
 
