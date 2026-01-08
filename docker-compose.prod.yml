@@ -1,0 +1,31 @@
+version: '3.8'
+
+# Production override for docker-compose.yml
+# Usage: docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+
+services:
+  app:
+    # Remove port mapping in production if using reverse proxy (nginx)
+    # ports:
+    #   - "${APP_PORT:-3000}:3000"
+    environment:
+      NODE_ENV: production
+      # Override with production secrets from environment or secrets manager
+    restart: always
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  mysql:
+    restart: always
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    # Uncomment to use custom MySQL configuration
+    # volumes:
+    #   - ./mysql.cnf:/etc/mysql/conf.d/custom.cnf:ro
+
