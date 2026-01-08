@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
 
-  # MySQL Database Service
+  # MySQL Da+git tabase Service
   mysql:
     image: mysql:8.0
     container_name: adex-mysql
