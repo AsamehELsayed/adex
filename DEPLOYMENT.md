@@ -30,9 +30,19 @@ DB_ROOT_PASSWORD=your-secure-root-password
 NODE_ENV=production
 APP_PORT=3000
 JWT_SECRET=your-super-secret-jwt-key
+
+# REQUIRED: Docker Hub image name (built by GitHub Actions)
+# Replace 'your-docker-username' with your actual Docker Hub username
+# Format: <your-docker-hub-username>/adex-app:latest
+DOCKER_IMAGE=your-docker-username/adex-app:latest
 ```
 
-**Important:** Never commit `.env` files to version control!
+**Important:** 
+- Never commit `.env` files to version control!
+- **You must set `DOCKER_IMAGE`** to your Docker Hub username. Find it by:
+  1. Check your GitHub repository secrets - `DOCKER_USERNAME` secret should contain your Docker Hub username
+  2. Or check your Docker Hub account at [hub.docker.com](https://hub.docker.com) - your username is shown in the URL
+  3. The image format is: `<your-username>/adex-app:latest`
 
 ### 2. Local Development with Docker Compose
 
@@ -79,19 +89,28 @@ Building Docker images on your server can fail due to:
 
 The CI/CD pipeline automatically builds and pushes images to Docker Hub via GitHub Actions.
 
-1. **Set your Docker image in `.env` file:**
+1. **Find your Docker Hub username:**
+   - Check your GitHub repository → Settings → Secrets → `DOCKER_USERNAME` secret
+   - Or check your Docker Hub account at [hub.docker.com](https://hub.docker.com)
+   - Your username appears in your profile URL: `hub.docker.com/u/<username>`
+
+2. **Set your Docker image in `.env` file:**
    ```env
+   # Replace 'your-docker-username' with your actual Docker Hub username
    DOCKER_IMAGE=your-docker-username/adex-app:latest
    ```
-
-2. **Or update `docker-compose.yml` directly:**
-   ```yaml
-   services:
-     app:
-       image: your-docker-username/adex-app:latest
+   
+   **Example:** If your Docker Hub username is `johnsmith`, set:
+   ```env
+   DOCKER_IMAGE=johnsmith/adex-app:latest
    ```
 
-3. **Pull and start services:**
+3. **Login to Docker Hub (if pulling private images):**
+   ```bash
+   docker login
+   ```
+
+4. **Pull and start services:**
    ```bash
    # Pull latest image from Docker Hub
    docker-compose pull
@@ -99,6 +118,13 @@ The CI/CD pipeline automatically builds and pushes images to Docker Hub via GitH
    # Start services (uses pre-built image, no build step)
    docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
    ```
+
+**Troubleshooting:**
+- If you get "pull access denied" or "repository does not exist":
+  - Verify your Docker Hub username is correct
+  - Check that the image exists: `docker pull your-username/adex-app:latest`
+  - Ensure GitHub Actions has successfully built and pushed the image
+  - Check GitHub Actions workflow runs to confirm the image was pushed
 
 #### Option B: Using GitHub Container Registry
 

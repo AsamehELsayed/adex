@@ -26,10 +26,11 @@ services:
   # Next.js Application Service
   app:
     # Use pre-built image from Docker Hub (built via GitHub Actions CI/CD)
-    # Set DOCKER_IMAGE env var or uncomment and set image directly
-    # For local development, uncomment the build section below and comment out the image line
-    image: ${DOCKER_IMAGE:-your-docker-username/adex-app:latest}
-    # Uncomment below for local development builds:
+    # REQUIRED: Set DOCKER_IMAGE in your .env file (e.g., DOCKER_IMAGE=your-username/adex-app:latest)
+    # The image name should match what's configured in .github/workflows/ci-cd.yml
+    # Format: <docker-hub-username>/adex-app:latest
+    image: ${DOCKER_IMAGE}
+    # For local development builds only, uncomment below and comment out the image line above:
     # build:
     #   context: .
     #   dockerfile: Dockerfile
