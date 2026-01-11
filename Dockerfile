@@ -1,39 +1,31 @@
-# Base
-FROM node:20-bookworm-slim AS base
+# استخدم image رسمي Node 20 LTS
+FROM node:20-alpine AS builder
+
 WORKDIR /app
 
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends python3 make g++ pkg-config && \
-    rm -rf /var/lib/apt/lists/*
-
-# Install dependencies
-FROM base AS deps
+# انسخ ملفات package
 COPY package.json package-lock.json ./
-RUN npm ci --legacy-peer-deps
+# تثبيت dependencies
+RUN npm ci
 
-# Build app
-FROM base AS builder
-COPY --from=deps /app/node_modules ./node_modules
+# انسخ باقي المشروع
 COPY . .
+
+# build production
 RUN npm run build
 
-# Runner image
-FROM base AS runner
+# المرحلة النهائية (slim image)
+FROM node:20-alpine AS runner
 WORKDIR /app
-ENV NODE_ENV=production
-ENV PORT=3000
 
-RUN addgroup --system --gid 1001 nodejs && \
-    adduser --system --uid 1001 nextjs
-
-# Copy only what يحتاجه runtime
-COPY --from=builder /app/package.json ./package.json
+# انسخ فقط ملفات production
+COPY --from=builder /app/package.json /app/package-lock.json ./
 COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/public ./public
-COPY --from=deps /app/node_modules ./node_modules
-COPY next.config.mjs ./ 
-COPY middleware.js ./ 
+COPY --from=builder /app/node_modules ./node_modules
 
-USER nextjs
+# expose port
 EXPOSE 3000
-CMD ["./node_modules/.bin/next", "start", "-p", "3000", "-H", "0.0.0.0"]
+
+# CMD مضبوط مع npx
+CMD ["npx", "next", "start", "-p", "3000", "-H", "0.0.0.0"]
