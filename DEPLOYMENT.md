@@ -66,33 +66,80 @@ docker-compose exec app npm run create-admin
 
 ### 4. Production Deployment
 
-#### Option A: Using Docker Compose (Recommended for single server)
+**⚠️ Important: Use Pre-built Images on Server**
 
-```bash
-# Use production override
-docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+Building Docker images on your server can fail due to:
+- **Out of memory errors** (exit code 137) - `npm ci` requires significant RAM
+- **Slow build times** - Server resources are better used for running containers
+- **Resource contention** - Building while running can impact performance
 
-# Or build and start
-docker-compose -f docker-compose.yml -f docker-compose.prod.yml build
-docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
-```
+**Solution:** Build images in CI/CD (GitHub Actions) and pull pre-built images on the server.
+
+#### Option A: Using Docker Hub (Recommended)
+
+The CI/CD pipeline automatically builds and pushes images to Docker Hub via GitHub Actions.
+
+1. **Set your Docker image in `.env` file:**
+   ```env
+   DOCKER_IMAGE=your-docker-username/adex-app:latest
+   ```
+
+2. **Or update `docker-compose.yml` directly:**
+   ```yaml
+   services:
+     app:
+       image: your-docker-username/adex-app:latest
+   ```
+
+3. **Pull and start services:**
+   ```bash
+   # Pull latest image from Docker Hub
+   docker-compose pull
+
+   # Start services (uses pre-built image, no build step)
+   docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+   ```
 
 #### Option B: Using GitHub Container Registry
 
-The CI/CD pipeline automatically builds and pushes images to GitHub Container Registry.
+The CI/CD pipeline can also push to GitHub Container Registry.
 
 1. **Pull the latest image:**
    ```bash
    docker pull ghcr.io/your-username/your-repo:latest
    ```
 
-2. **Run with docker-compose:**
-   Update `docker-compose.yml` to use the image:
+2. **Update `docker-compose.yml` to use the image:**
    ```yaml
    services:
      app:
        image: ghcr.io/your-username/your-repo:latest
-       # Remove build section
+   ```
+
+3. **Start services:**
+   ```bash
+   docker-compose pull
+   docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+   ```
+
+#### Option C: Local Development Build (Only for Development)
+
+If you need to build locally for development/testing:
+
+1. **Uncomment build section in `docker-compose.yml`:**
+   ```yaml
+   services:
+     app:
+       build:
+         context: .
+         dockerfile: Dockerfile
+       # Comment out: image: ...
+   ```
+
+2. **Build and start:**
+   ```bash
+   docker-compose build
+   docker-compose up -d
    ```
 
 ## GitHub Actions CI/CD
@@ -213,16 +260,26 @@ docker-compose exec -T mysql mysql -u root -p${DB_ROOT_PASSWORD} ${DB_NAME} < ba
 
 ### Update Application
 
+**Using Pre-built Images (Recommended):**
+
+```bash
+# Pull latest image from Docker Hub/GitHub Container Registry
+docker-compose pull
+
+# Restart with new image
+docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+```
+
+**Note:** The image is automatically built and pushed by GitHub Actions when you push to the main branch. You only need to pull and restart on the server.
+
+**If building locally (not recommended for production):**
+
 ```bash
 # Pull latest changes
 git pull
 
-# Rebuild and restart
+# Rebuild and restart (requires significant memory)
 docker-compose up -d --build
-
-# Or if using pre-built images
-docker-compose pull
-docker-compose up -d
 ```
 
 ### Health Checks

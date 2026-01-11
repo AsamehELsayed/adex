@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
 
   # MySQL Da+git tabase Service
@@ -27,9 +25,14 @@ services:
 
   # Next.js Application Service
   app:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    # Use pre-built image from Docker Hub (built via GitHub Actions CI/CD)
+    # Set DOCKER_IMAGE env var or uncomment and set image directly
+    # For local development, uncomment the build section below and comment out the image line
+    image: ${DOCKER_IMAGE:-your-docker-username/adex-app:latest}
+    # Uncomment below for local development builds:
+    # build:
+    #   context: .
+    #   dockerfile: Dockerfile
     container_name: adex-app
     restart: unless-stopped
     ports:
