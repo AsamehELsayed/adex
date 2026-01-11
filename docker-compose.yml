@@ -1,6 +1,7 @@
+version: "3.9"
+
 services:
 
-  # MySQL Da+git tabase Service
   mysql:
     image: mysql:8.0
     container_name: adex-mysql
@@ -23,17 +24,8 @@ services:
       retries: 5
     command: --default-authentication-plugin=mysql_native_password
 
-  # Next.js Application Service
   app:
-    # Use pre-built image from Docker Hub (built via GitHub Actions CI/CD)
-    # REQUIRED: Set DOCKER_IMAGE in your .env file (e.g., DOCKER_IMAGE=your-username/adex-app:latest)
-    # The image name should match what's configured in .github/workflows/ci-cd.yml
-    # Format: <docker-hub-username>/adex-app:latest
-    image: ${DOCKER_IMAGE}
-    # For local development builds only, uncomment below and comment out the image line above:
-    # build:
-    #   context: .
-    #   dockerfile: Dockerfile
+    image: ${DOCKER_IMAGE:-asamehss/adex-app:main}
     container_name: adex-app
     restart: unless-stopped
     ports:
@@ -47,14 +39,15 @@ services:
       DB_PASSWORD: ${DB_PASSWORD:-adex_password}
       JWT_SECRET: ${JWT_SECRET:-change-this-secret-key-in-production}
       PORT: 3000
+      APP_URL: https://adexco.net
+    command: next start -p 3000 -H 0.0.0.0
     depends_on:
       mysql:
         condition: service_healthy
     networks:
-      - adex-network      # internal network to talk to MySQL
-      - raheed_default    # external network to talk to existing nginx/app stack
+      - adex-network
+      - raheed_default
     volumes:
-      # Persist uploads directory
       - ./public/uploads:/app/public/uploads
 
 networks:
@@ -66,4 +59,3 @@ networks:
 volumes:
   mysql_data:
     driver: local
-
