@@ -40,7 +40,8 @@ services:
       JWT_SECRET: ${JWT_SECRET:-change-this-secret-key-in-production}
       PORT: 3000
       APP_URL: https://adexco.net
-    command: next start -p 3000 -H 0.0.0.0
+    entrypoint: ["./node_modules/.bin/next"]
+    command: ["start","-p","3000","-H","0.0.0.0"]
     depends_on:
       mysql:
         condition: service_healthy
