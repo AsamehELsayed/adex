@@ -6,7 +6,7 @@ WORKDIR /app
 # انسخ ملفات package
 COPY package.json package-lock.json ./
 # تثبيت dependencies
-RUN npm ci
+RUN npm install --legacy-peer-deps
 
 # انسخ باقي المشروع
 COPY . .
