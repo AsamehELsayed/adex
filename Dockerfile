@@ -36,4 +36,4 @@ COPY middleware.js ./
 
 USER nextjs
 EXPOSE 3000
-CMD ["npm", "run", "start"]
+CMD ["./node_modules/.bin/next", "start", "-p", "3000", "-H", "0.0.0.0"]
