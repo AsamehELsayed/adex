@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { connectDB } from '@/lib/db';
-import { verifyToken } from '@/lib/auth';
+import { getSession } from '@/lib/auth';
 import User from '@/models/User';
 
 let dbInitialized = false;
@@ -11,53 +11,10 @@ const initDB = async () => {
   }
 };
 
-// Helper to extract token from request
-const getToken = (request) => {
-  // Try Next.js cookies API first
-  const cookieToken = request.cookies.get('auth-token')?.value;
-  if (cookieToken) return cookieToken;
-  
-  // Fallback: parse cookie header manually
-  const cookieHeader = request.headers.get('cookie');
-  if (cookieHeader) {
-    const match = cookieHeader.match(/auth-token=([^;]+)/);
-    if (match) {
-      try {
-        return decodeURIComponent(match[1]);
-      } catch {
-        return match[1];
-      }
-    }
-  }
-
-  // Fallback: Authorization header (Bearer token)
-  const authHeader = request.headers.get('authorization') || request.headers.get('Authorization');
-  if (authHeader?.toLowerCase().startsWith('bearer ')) {
-    return authHeader.slice(7);
-  }
-
-  // Fallback: custom header
-  const headerToken = request.headers.get('x-auth-token');
-  if (headerToken) {
-    return headerToken;
-  }
-  
-  return null;
-};
-
 export async function GET(request) {
   try {
-    const token = getToken(request);
-    
-    if (!token) {
-      return NextResponse.json(
-        { success: false, authenticated: false },
-        { status: 401 }
-      );
-    }
-
-    const decoded = verifyToken(token);
-    if (!decoded) {
+    const { payload } = await getSession(request);
+    if (!payload) {
       return NextResponse.json(
         { success: false, authenticated: false },
         { status: 401 }
@@ -67,7 +24,7 @@ export async function GET(request) {
     await initDB();
     
     // Get fresh user data from database
-    const user = await User.findByPk(decoded.id, {
+    const user = await User.findByPk(payload.id, {
       attributes: ['id', 'username', 'email', 'role', 'isActive'],
     });
 

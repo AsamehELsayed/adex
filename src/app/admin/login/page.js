@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,23 +15,30 @@ export default function AdminLogin() {
   const router = useRouter();
   const { toast } = useToast();
 
-  useEffect(() => {
-    // Check if already logged in
-    fetch("/api/auth/session", {
-      credentials: "include", // Ensure cookies are sent
-      cache: "no-store", // Don't cache auth checks
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.authenticated) {
-          router.push("/admin");
-        }
-      })
-      .catch((error) => {
-        console.error("Session check error:", error);
-        // Don't redirect on error, let user try to login
-      });
+  const redirectToDashboard = useCallback(() => {
+    router.replace("/admin");
+    router.refresh();
   }, [router]);
+
+  useEffect(() => {
+    const checkSession = async () => {
+      try {
+        const res = await fetch("/api/auth/session", {
+          credentials: "include",
+          cache: "no-store",
+        });
+        const data = await res.json();
+
+        if (data.authenticated) {
+          redirectToDashboard();
+        }
+      } catch (error) {
+        console.error("Session check error:", error);
+      }
+    };
+
+    checkSession();
+  }, [redirectToDashboard]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -55,26 +62,15 @@ export default function AdminLogin() {
           description: "Welcome to the admin dashboard",
         });
 
-        // Fallback: ensure auth cookie exists even if proxy strips Set-Cookie
-        if (data.token) {
-          const maxAgeSeconds = 60 * 60 * 24 * 7; // 7 days
-          const secureFlag = window.location.protocol === "https:" ? "; Secure" : "";
-          document.cookie = `auth-token=${data.token}; Path=/; Max-Age=${maxAgeSeconds}; SameSite=Lax${secureFlag}`;
-        }
-        
-        // Wait a moment to ensure cookie is properly set by the browser
-        await new Promise(resolve => setTimeout(resolve, 200));
-        
-        // Force a hard redirect to ensure fresh page load with cookies
-        // Using window.location.replace prevents back button returning to login
-        window.location.replace("/admin");
+        // Allow the browser a moment to persist the httpOnly cookie before navigating
+        await new Promise((resolve) => setTimeout(resolve, 200));
+        redirectToDashboard();
       } else {
         toast({
           title: "Login Failed",
           description: data.error || "Invalid credentials",
           variant: "destructive",
         });
-        setIsLoading(false);
       }
     } catch (error) {
       console.error("Login error:", error);
@@ -83,6 +79,7 @@ export default function AdminLogin() {
         description: "An error occurred. Please try again.",
         variant: "destructive",
       });
+    } finally {
       setIsLoading(false);
     }
   };

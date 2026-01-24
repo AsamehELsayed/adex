@@ -62,8 +62,9 @@ export default function AdminDashboard() {
 
   const handleLogout = async () => {
     try {
-      await fetch("/api/auth/logout", { method: "POST" });
-      router.push("/admin/login");
+      await fetch("/api/auth/logout", { method: "POST", credentials: "include" });
+      router.replace("/admin/login");
+      router.refresh();
       toast({
         title: "Logged out",
         description: "You have been successfully logged out",

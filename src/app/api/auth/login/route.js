@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { connectDB } from '@/lib/db';
 import User from '@/models/User';
-import { generateToken } from '@/lib/auth';
+import { attachAuthCookie, signAuthToken } from '@/lib/auth';
 
 let dbInitialized = false;
 const initDB = async () => {
@@ -47,13 +47,11 @@ export async function POST(request) {
       );
     }
 
-    // Generate token
-    const token = generateToken(user);
+    const token = await signAuthToken(user);
 
-    // Create response
     const response = NextResponse.json({
       success: true,
-      token, // include token for client-side fallback in case proxies strip Set-Cookie
+      token, // exposed only as a fallback for non-browser clients
       user: {
         id: user.id,
         username: user.username,
@@ -62,21 +60,7 @@ export async function POST(request) {
       },
     });
 
-    // Detect if connection is secure (HTTPS)
-    // Check x-forwarded-proto header (set by reverse proxies like nginx, cloudflare, etc.)
-    const forwardedProto = request.headers.get('x-forwarded-proto');
-    const appUrl = process.env.APP_URL || '';
-    const isSecure = forwardedProto === 'https' || appUrl.startsWith('https://');
-
-    // Set auth cookie
-    response.cookies.set('auth-token', token, {
-      httpOnly: true,
-      secure: isSecure,
-      sameSite: 'lax',
-      maxAge: 60 * 60 * 24 * 7, // 7 days
-      path: '/',
-    });
-    // Also expose token via header for debugging/fallback (not used by browser automatically)
+    attachAuthCookie(response, token, request);
     response.headers.set('X-Auth-Token', token);
 
     return response;
