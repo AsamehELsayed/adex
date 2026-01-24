@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -62,10 +63,15 @@ const Header = () => {
       <div className="container-luxury">
         <nav className="flex items-center justify-between">
           {/* Logo */}
-          <Link href="/" className="relative z-10">
-            <span className="font-serif text-2xl font-medium tracking-tight text-foreground">
-              Adex<span className="text-accent">.</span>
-            </span>
+          <Link href="/" className="relative z-10 flex items-center">
+            <Image
+              src="/logo.png"
+              alt="Adex Consulting"
+              width={120}
+              height={40}
+              className="h-8 w-auto object-contain"
+              priority
+            />
           </Link>
 
           {/* Desktop Navigation */}
@@ -147,9 +153,16 @@ const Header = () => {
                     <Link 
                       href="/" 
                       onClick={() => setIsMobileMenuOpen(false)}
-                      className="font-serif text-2xl font-medium tracking-tight text-foreground"
+                      className="flex items-center"
                     >
-                      Adex<span className="text-accent">.</span>
+                      <Image
+                        src="/logo.png"
+                        alt="Adex Consulting"
+                        width={120}
+                        height={40}
+                        className="h-8 w-auto object-contain"
+                        priority
+                      />
                     </Link>
                     <button
                       onClick={() => setIsMobileMenuOpen(false)}
