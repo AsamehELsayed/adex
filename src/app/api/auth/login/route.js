@@ -53,6 +53,7 @@ export async function POST(request) {
     // Create response
     const response = NextResponse.json({
       success: true,
+      token, // include token for client-side fallback in case proxies strip Set-Cookie
       user: {
         id: user.id,
         username: user.username,
@@ -75,6 +76,8 @@ export async function POST(request) {
       maxAge: 60 * 60 * 24 * 7, // 7 days
       path: '/',
     });
+    // Also expose token via header for debugging/fallback (not used by browser automatically)
+    response.headers.set('X-Auth-Token', token);
 
     return response;
   } catch (error) {

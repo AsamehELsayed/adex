@@ -54,6 +54,13 @@ export default function AdminLogin() {
           title: "Login Successful",
           description: "Welcome to the admin dashboard",
         });
+
+        // Fallback: ensure auth cookie exists even if proxy strips Set-Cookie
+        if (data.token) {
+          const maxAgeSeconds = 60 * 60 * 24 * 7; // 7 days
+          const secureFlag = window.location.protocol === "https:" ? "; Secure" : "";
+          document.cookie = `auth-token=${data.token}; Path=/; Max-Age=${maxAgeSeconds}; SameSite=Lax${secureFlag}`;
+        }
         
         // Wait a moment to ensure cookie is properly set by the browser
         await new Promise(resolve => setTimeout(resolve, 200));

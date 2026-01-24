@@ -29,6 +29,18 @@ const getToken = (request) => {
       }
     }
   }
+
+  // Fallback: Authorization header (Bearer token)
+  const authHeader = request.headers.get('authorization') || request.headers.get('Authorization');
+  if (authHeader?.toLowerCase().startsWith('bearer ')) {
+    return authHeader.slice(7);
+  }
+
+  // Fallback: custom header
+  const headerToken = request.headers.get('x-auth-token');
+  if (headerToken) {
+    return headerToken;
+  }
   
   return null;
 };
