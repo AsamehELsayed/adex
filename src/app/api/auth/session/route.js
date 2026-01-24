@@ -13,7 +13,26 @@ const initDB = async () => {
 
 export async function GET(request) {
   try {
-    const token = getTokenFromRequest(request);
+    // Try multiple methods to get the token
+    let token = getTokenFromRequest(request);
+    
+    // Fallback: check cookies directly
+    if (!token) {
+      const cookieHeader = request.headers.get('cookie');
+      if (cookieHeader) {
+        const cookies = cookieHeader.split(';').reduce((acc, cookie) => {
+          const [key, value] = cookie.trim().split('=');
+          acc[key] = decodeURIComponent(value);
+          return acc;
+        }, {});
+        token = cookies['auth-token'] || null;
+      }
+    }
+    
+    // Fallback: check X-Auth-Token header (if cookie failed)
+    if (!token) {
+      token = request.headers.get('X-Auth-Token');
+    }
     
     if (!token) {
       return NextResponse.json(

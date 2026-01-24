@@ -69,18 +69,32 @@ export async function POST(request) {
     // Clear any existing auth-token cookie first to avoid conflicts
     response.cookies.delete('auth-token');
     
+    // Determine if we're in production with HTTPS
+    const isProduction = process.env.NODE_ENV === 'production';
+    const isSecure = isProduction || request.headers.get('x-forwarded-proto') === 'https';
+    
     // Set cookie with explicit path and domain
     try {
-      response.cookies.set('auth-token', token, {
+      const cookieOptions = {
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'lax',
+        secure: isSecure,
+        sameSite: isSecure ? 'lax' : 'lax', // Use 'lax' for same-site, 'none' only if cross-site
         maxAge: 60 * 60 * 24 * 7, // 7 days
         path: '/',
-      });
+      };
+      
+      // Don't set domain explicitly - let browser handle it
+      // Setting domain explicitly can cause issues with subdomains and localhost
+      
+      response.cookies.set('auth-token', token, cookieOptions);
+      
+      // Log cookie setting for debugging (remove in production if needed)
+      if (!isProduction) {
+        console.log('Cookie set with options:', cookieOptions);
+      }
     } catch (cookieError) {
       // If cookie setting fails due to too many cookies, fall back to header
-      console.warn('Failed to set cookie, using header instead:', cookieError.message);
+      console.error('Failed to set cookie:', cookieError.message);
       response.headers.set('X-Auth-Token', token);
       // Return response with token in body as well for client-side handling
       return NextResponse.json({

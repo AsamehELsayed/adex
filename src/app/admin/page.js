@@ -41,7 +41,10 @@ export default function AdminDashboard() {
 
   const checkAuth = async () => {
     try {
-      const response = await fetch("/api/auth/session");
+      const response = await fetch("/api/auth/session", {
+        credentials: "include", // Ensure cookies are sent
+        cache: "no-store", // Don't cache auth checks
+      });
       const data = await response.json();
 
       if (data.authenticated) {
@@ -50,6 +53,7 @@ export default function AdminDashboard() {
         router.push("/admin/login");
       }
     } catch (error) {
+      console.error("Auth check error:", error);
       router.push("/admin/login");
     } finally {
       setIsLoading(false);
