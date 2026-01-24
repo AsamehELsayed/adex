@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { connectDB } from '@/lib/db';
-import { verifyToken, getTokenFromRequest } from '@/lib/auth';
+import { verifyToken } from '@/lib/auth';
 import User from '@/models/User';
 
 let dbInitialized = false;
@@ -11,28 +11,31 @@ const initDB = async () => {
   }
 };
 
-export async function GET(request) {
-  try {
-    // Try multiple methods to get the token
-    let token = getTokenFromRequest(request);
-    
-    // Fallback: check cookies directly
-    if (!token) {
-      const cookieHeader = request.headers.get('cookie');
-      if (cookieHeader) {
-        const cookies = cookieHeader.split(';').reduce((acc, cookie) => {
-          const [key, value] = cookie.trim().split('=');
-          acc[key] = decodeURIComponent(value);
-          return acc;
-        }, {});
-        token = cookies['auth-token'] || null;
+// Helper to extract token from request
+const getToken = (request) => {
+  // Try Next.js cookies API first
+  const cookieToken = request.cookies.get('auth-token')?.value;
+  if (cookieToken) return cookieToken;
+  
+  // Fallback: parse cookie header manually
+  const cookieHeader = request.headers.get('cookie');
+  if (cookieHeader) {
+    const match = cookieHeader.match(/auth-token=([^;]+)/);
+    if (match) {
+      try {
+        return decodeURIComponent(match[1]);
+      } catch {
+        return match[1];
       }
     }
-    
-    // Fallback: check X-Auth-Token header (if cookie failed)
-    if (!token) {
-      token = request.headers.get('X-Auth-Token');
-    }
+  }
+  
+  return null;
+};
+
+export async function GET(request) {
+  try {
+    const token = getToken(request);
     
     if (!token) {
       return NextResponse.json(
