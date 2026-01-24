@@ -55,34 +55,12 @@ export default function AdminLogin() {
           description: "Welcome to the admin dashboard",
         });
         
-        // Wait a brief moment to ensure cookie is set, then verify session before redirect
-        await new Promise(resolve => setTimeout(resolve, 100));
+        // Wait a moment to ensure cookie is properly set by the browser
+        await new Promise(resolve => setTimeout(resolve, 200));
         
-        // Verify session before redirecting
-        try {
-          const sessionResponse = await fetch("/api/auth/session", {
-            credentials: "include",
-          });
-          const sessionData = await sessionResponse.json();
-          
-          if (sessionData.authenticated) {
-            // Force a hard redirect to ensure fresh page load
-            window.location.href = "/admin";
-          } else {
-            // If session check fails, try redirect anyway (cookie might still be setting)
-            router.push("/admin");
-            // Force reload after a short delay if still on login page
-            setTimeout(() => {
-              if (window.location.pathname === "/admin/login") {
-                window.location.href = "/admin";
-              }
-            }, 500);
-          }
-        } catch (sessionError) {
-          console.error("Session check error:", sessionError);
-          // Redirect anyway - the middleware will handle auth
-          window.location.href = "/admin";
-        }
+        // Force a hard redirect to ensure fresh page load with cookies
+        // Using window.location.replace prevents back button returning to login
+        window.location.replace("/admin");
       } else {
         toast({
           title: "Login Failed",

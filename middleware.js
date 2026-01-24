@@ -4,6 +4,26 @@ import { verifyToken } from '@/lib/auth';
 export function middleware(request) {
   const { pathname } = request.nextUrl;
 
+  // Helper function to build proper redirect URL respecting proxy headers
+  const buildRedirectUrl = (path) => {
+    const url = request.nextUrl.clone();
+    url.pathname = path;
+    
+    // In production, respect X-Forwarded headers from reverse proxy
+    const forwardedProto = request.headers.get('x-forwarded-proto');
+    const forwardedHost = request.headers.get('x-forwarded-host') || request.headers.get('host');
+    
+    if (forwardedProto) {
+      url.protocol = forwardedProto + ':';
+    }
+    if (forwardedHost) {
+      url.host = forwardedHost;
+      url.port = ''; // Clear port when using forwarded host
+    }
+    
+    return url;
+  };
+
   // Helper function to get token from request
   const getToken = () => {
     // Try cookie first
@@ -15,7 +35,9 @@ export function middleware(request) {
       if (cookieHeader) {
         const cookies = cookieHeader.split(';').reduce((acc, cookie) => {
           const [key, value] = cookie.trim().split('=');
-          acc[key] = decodeURIComponent(value);
+          if (key && value) {
+            acc[key] = decodeURIComponent(value);
+          }
           return acc;
         }, {});
         token = cookies['auth-token'] || null;
@@ -35,12 +57,15 @@ export function middleware(request) {
     const token = getToken();
 
     if (!token) {
-      return NextResponse.redirect(new URL('/admin/login', request.url));
+      return NextResponse.redirect(buildRedirectUrl('/admin/login'));
     }
 
     const decoded = verifyToken(token);
     if (!decoded) {
-      return NextResponse.redirect(new URL('/admin/login', request.url));
+      // Clear invalid cookie and redirect
+      const response = NextResponse.redirect(buildRedirectUrl('/admin/login'));
+      response.cookies.delete('auth-token');
+      return response;
     }
 
     // Allow access to admin routes
@@ -54,7 +79,7 @@ export function middleware(request) {
       const decoded = verifyToken(token);
       if (decoded) {
         // Already logged in, redirect to dashboard
-        return NextResponse.redirect(new URL('/admin', request.url));
+        return NextResponse.redirect(buildRedirectUrl('/admin'));
       }
     }
   }

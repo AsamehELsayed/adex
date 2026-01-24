@@ -69,16 +69,21 @@ export async function POST(request) {
     // Clear any existing auth-token cookie first to avoid conflicts
     response.cookies.delete('auth-token');
     
-    // Determine if we're in production with HTTPS
+    // Determine if we're behind HTTPS (check forwarded proto from reverse proxy)
+    const forwardedProto = request.headers.get('x-forwarded-proto');
+    const isHttps = forwardedProto === 'https' || request.url.startsWith('https://');
     const isProduction = process.env.NODE_ENV === 'production';
-    const isSecure = isProduction || request.headers.get('x-forwarded-proto') === 'https';
+    
+    // In production, assume HTTPS unless explicitly HTTP (most production setups use HTTPS)
+    // Only set secure:true if we're confident the connection is HTTPS end-to-end
+    const isSecure = isHttps || (isProduction && forwardedProto !== 'http');
     
     // Set cookie with explicit path and domain
     try {
       const cookieOptions = {
         httpOnly: true,
         secure: isSecure,
-        sameSite: isSecure ? 'lax' : 'lax', // Use 'lax' for same-site, 'none' only if cross-site
+        sameSite: 'lax', // 'lax' allows cookies on same-site navigation
         maxAge: 60 * 60 * 24 * 7, // 7 days
         path: '/',
       };
@@ -88,10 +93,8 @@ export async function POST(request) {
       
       response.cookies.set('auth-token', token, cookieOptions);
       
-      // Log cookie setting for debugging (remove in production if needed)
-      if (!isProduction) {
-        console.log('Cookie set with options:', cookieOptions);
-      }
+      // Log cookie setting for debugging
+      console.log('Cookie set with options:', { ...cookieOptions, forwardedProto, isProduction });
     } catch (cookieError) {
       // If cookie setting fails due to too many cookies, fall back to header
       console.error('Failed to set cookie:', cookieError.message);
