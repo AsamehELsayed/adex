@@ -17,7 +17,7 @@ export async function signAuthToken(user, expiresInSeconds = DEFAULT_EXPIRY_SECO
   })
     .setProtectedHeader({ alg: 'HS256', typ: 'JWT' })
     .setIssuedAt()
-    .setExpiration(Math.floor(Date.now() / 1000) + expiresInSeconds)
+    .setExpirationTime(Math.floor(Date.now() / 1000) + expiresInSeconds)
     .sign(getJwtSecret());
 }
 
