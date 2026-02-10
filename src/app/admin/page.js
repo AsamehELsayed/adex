@@ -14,7 +14,8 @@ import {
   Settings,
   Save,
   Loader2,
-  Image as ImageIcon
+  Image as ImageIcon,
+  Eye
 } from "lucide-react";
 import HeroEditor from "@/components/admin/HeroEditor";
 import AboutEditor from "@/components/admin/AboutEditor";
@@ -26,6 +27,7 @@ import ContactsManager from "@/components/admin/ContactsManager";
 import ContactPageEditor from "@/components/admin/ContactPageEditor";
 import AboutPageEditor from "@/components/admin/AboutPageEditor";
 import ServicesPageEditor from "@/components/admin/ServicesPageEditor";
+import VisionPageEditor from "@/components/admin/VisionPageEditor";
 import ImageManager from "@/components/admin/ImageManager";
 
 export default function AdminDashboard() {
@@ -109,7 +111,7 @@ export default function AdminDashboard() {
       {/* Main Content */}
       <div className="container-luxury py-8">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-6 mb-8">
+          <TabsList className="grid w-full grid-cols-7 mb-8">
             <TabsTrigger value="home">
               <Home className="mr-2 h-4 w-4" />
               Home Page
@@ -117,6 +119,10 @@ export default function AdminDashboard() {
             <TabsTrigger value="about">
               <FileText className="mr-2 h-4 w-4" />
               About Page
+            </TabsTrigger>
+            <TabsTrigger value="vision">
+              <Eye className="mr-2 h-4 w-4" />
+              Vision Page
             </TabsTrigger>
             <TabsTrigger value="services">
               <Briefcase className="mr-2 h-4 w-4" />
@@ -151,6 +157,10 @@ export default function AdminDashboard() {
 
           <TabsContent value="about" className="space-y-8">
             <AboutPageEditor />
+          </TabsContent>
+
+          <TabsContent value="vision" className="space-y-8">
+            <VisionPageEditor />
           </TabsContent>
 
           <TabsContent value="services" className="space-y-8">
