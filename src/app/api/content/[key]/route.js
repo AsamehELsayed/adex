@@ -16,7 +16,7 @@ export async function GET(request, { params }) {
   try {
     await initDB();
     
-    const { key } = params;
+    const { key } = await params;
     const content = await Content.findOne({ where: { key } });
 
     if (!content) {
@@ -44,7 +44,7 @@ export async function PUT(request, { params }) {
   try {
     await initDB();
     
-    const { key } = params;
+    const { key } = await params;
     const body = await request.json();
 
     const content = await Content.findOne({ where: { key } });
@@ -92,7 +92,7 @@ export async function DELETE(request, { params }) {
   try {
     await initDB();
     
-    const { key } = params;
+    const { key } = await params;
     const content = await Content.findOne({ where: { key } });
 
     if (!content) {

@@ -6,31 +6,73 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight, CheckCircle } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
+import { useContent } from "@/hooks/use-content";
 
-const values = [
-  {
-    title: "Excellence Without Compromise",
+// Default content (mirrors AboutPageEditor defaults)
+const defaultContent = {
+  hero: {
+    label: "About Adex",
+    title: "Trusted Advisors to\nIndustry Leaders",
     description:
-      "We set the highest standards for ourselves and our work. Every deliverable reflects our commitment to exceptional quality.",
+      "For over two decades, Apex Consulting has partnered with the world's most ambitious organizations to navigate complexity and achieve breakthrough results.",
   },
-  {
-    title: "Client Partnership",
+  story: {
+    title: "Our Story",
+    paragraphs: [
+      "Founded in 1998 by former Fortune 100 executives, Adex was built on a simple premise: consulting should deliver tangible results, not just presentations.",
+      "Today, we've grown into a global firm with offices across North America, Europe, and Asia. Our team of 200+ consultants brings diverse perspectives and deep expertise across industries.",
+      "What hasn't changed is our founding commitment: we measure our success by the success we create for our clients.",
+    ],
+    foundedYear: "1998",
+  },
+  values: {
+    label: "Our Values",
+    title: "Principles That Guide\nEvery Engagement",
+    values: [
+      {
+        title: "Excellence Without Compromise",
+        description:
+          "We set the highest standards for ourselves and our work. Every deliverable reflects our commitment to exceptional quality.",
+      },
+      {
+        title: "Client Partnership",
+        description:
+          "We succeed when you succeed. Our interests are aligned with yours, creating a true partnership built on mutual trust.",
+      },
+      {
+        title: "Integrity First",
+        description:
+          "We provide honest counsel, even when it's difficult. Our reputation is built on transparency and ethical practice.",
+      },
+      {
+        title: "Innovation-Driven",
+        description:
+          "We continuously evolve our methodologies and embrace new technologies to deliver cutting-edge solutions.",
+      },
+    ],
+  },
+  cta: {
+    title: "Join Our Team",
     description:
-      "We succeed when you succeed. Our interests are aligned with yours, creating a true partnership built on mutual trust.",
+      "We're always looking for exceptional talent to join our growing team of consultants and thought leaders.",
+    buttonText: "Get in Touch",
   },
-  {
-    title: "Integrity First",
-    description:
-      "We provide honest counsel, even when it's difficult. Our reputation is built on transparency and ethical practice.",
-  },
-  {
-    title: "Innovation-Driven",
-    description:
-      "We continuously evolve our methodologies and embrace new technologies to deliver cutting-edge solutions.",
-  },
-];
+};
 
 export default function About() {
+  const { content } = useContent("about-page", defaultContent);
+  const displayContent = content || defaultContent;
+
+  const hero = displayContent.hero || defaultContent.hero;
+  const story = displayContent.story || defaultContent.story;
+  const valuesSection = displayContent.values || defaultContent.values;
+  const cta = displayContent.cta || defaultContent.cta;
+
+  const heroTitleLines =
+    typeof hero.title === "string" && hero.title.length > 0
+      ? hero.title.split("\n")
+      : ["Trusted Advisors to", "Industry Leaders"];
+
   return (
     <Layout>
       {/* Hero */}
@@ -43,7 +85,7 @@ export default function About() {
               transition={{ duration: 0.6 }}
               className="label-uppercase mb-6 block"
             >
-              About Adex
+              {hero.label}
             </motion.span>
             <motion.h1
               initial={{ opacity: 0, y: 30 }}
@@ -51,9 +93,12 @@ export default function About() {
               transition={{ duration: 0.6, delay: 0.1 }}
               className="heading-display mb-8"
             >
-              Trusted Advisors to
-              <br />
-              Industry Leaders
+              {heroTitleLines.map((line, index) => (
+                <span key={index}>
+                  {line}
+                  {index < heroTitleLines.length - 1 && <br />}
+                </span>
+              ))}
             </motion.h1>
             <motion.p
               initial={{ opacity: 0, y: 30 }}
@@ -61,9 +106,7 @@ export default function About() {
               transition={{ duration: 0.6, delay: 0.2 }}
               className="body-large max-w-2xl"
             >
-              For over two decades, Apex Consulting has partnered with the
-              world's most ambitious organizations to navigate complexity and
-              achieve breakthrough results.
+              {hero.description}
             </motion.p>
           </div>
         </div>
@@ -79,22 +122,16 @@ export default function About() {
               viewport={{ once: true }}
               transition={{ duration: 0.8 }}
             >
-              <h2 className="heading-section mb-8">Our Story</h2>
+              <h2 className="heading-section mb-8">{story.title}</h2>
               <div className="space-y-6">
-                <p className="body-large">
-                  Founded in 1998 by former Fortune 100 executives, Adex was
-                  built on a simple premise: consulting should deliver tangible
-                  results, not just presentations.
-                </p>
-                <p className="body-regular">
-                  Today, we've grown into a global firm with offices across North
-                  America, Europe, and Asia. Our team of 200+ consultants brings
-                  diverse perspectives and deep expertise across industries.
-                </p>
-                <p className="body-regular">
-                  What hasn't changed is our founding commitment: we measure our
-                  success by the success we create for our clients.
-                </p>
+                {(story.paragraphs || []).map((para, idx) => (
+                  <p
+                    key={idx}
+                    className={idx === 0 ? "body-large" : "body-regular"}
+                  >
+                    {para}
+                  </p>
+                ))}
               </div>
             </motion.div>
             <motion.div
@@ -113,7 +150,9 @@ export default function About() {
                 />
               </div>
               <div className="absolute -bottom-8 right-8 bg-accent text-accent-foreground p-8">
-                <span className="block font-serif text-5xl font-medium">1998</span>
+                <span className="block font-serif text-5xl font-medium">
+                  {story.foundedYear || "1998"}
+                </span>
                 <span className="text-sm">Founded</span>
               </div>
             </motion.div>
@@ -131,25 +170,33 @@ export default function About() {
             transition={{ duration: 0.6 }}
             className="max-w-3xl mb-16"
           >
-            <span className="label-uppercase mb-4 block">Our Values</span>
+            <span className="label-uppercase mb-4 block">
+              {valuesSection.label}
+            </span>
             <h2 className="heading-section">
-              Principles That Guide
-              <br />
-              Every Engagement
+              {(valuesSection.title || "").split("\n").map((line, index, arr) => (
+                <span key={index}>
+                  {line}
+                  {index < arr.length - 1 && <br />}
+                </span>
+              ))}
             </h2>
           </motion.div>
 
           <div className="grid md:grid-cols-2 gap-8">
-            {values.map((value, index) => (
+            {(valuesSection.values || []).map((value, index) => (
               <motion.div
-                key={value.title}
+                key={value.title || index}
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.6, delay: index * 0.1 }}
                 className="flex gap-6 p-8 border border-border hover:border-accent/50 transition-colors duration-300"
               >
-                <CheckCircle className="flex-shrink-0 text-accent mt-1" size={24} />
+                <CheckCircle
+                  className="flex-shrink-0 text-accent mt-1"
+                  size={24}
+                />
                 <div>
                   <h3 className="heading-subsection mb-3">{value.title}</h3>
                   <p className="body-regular">{value.description}</p>
@@ -170,14 +217,13 @@ export default function About() {
             transition={{ duration: 0.6 }}
             className="max-w-2xl mx-auto"
           >
-            <h2 className="heading-section mb-6">Join Our Team</h2>
+            <h2 className="heading-section mb-6">{cta.title}</h2>
             <p className="text-lg text-primary-foreground/70 mb-10">
-              We're always looking for exceptional talent to join our growing
-              team of consultants and thought leaders.
+              {cta.description}
             </p>
             <Button variant="premium-gold" size="premium" asChild>
               <Link href="/contact">
-                Get in Touch
+                {cta.buttonText}
                 <ArrowRight size={16} className="ml-2" />
               </Link>
             </Button>

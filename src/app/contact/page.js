@@ -9,6 +9,45 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Mail, Phone, MapPin, Send } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useContent } from "@/hooks/use-content";
+
+// Default content (matches ContactPageEditor defaults)
+const defaultContent = {
+  hero: {
+    label: "Contact Us",
+    title: "Let's Start a\nConversation",
+    description:
+      "Every great transformation begins with a conversation. We'd love to hear about your challenges and explore how we can help.",
+  },
+  form: {
+    title: "Send Us a Message",
+    nameLabel: "Full Name *",
+    emailLabel: "Email Address *",
+    companyLabel: "Company",
+    messageLabel: "How Can We Help? *",
+    submitButton: "Send Message",
+  },
+  info: {
+    title: "Get in Touch",
+    description:
+      "Our team is available to discuss your strategic needs. Reach out through any of the channels below.",
+    address: {
+      title: "Headquarters",
+      line1: "One World Trade Center",
+      line2: "Suite 8500",
+      line3: "New York, NY 10007",
+    },
+    email: {
+      title: "Email",
+      value: "hello@apexconsulting.com",
+    },
+    phone: {
+      title: "Phone",
+      value: "+1 (212) 555-1234",
+    },
+    hours: "Monday – Friday: 9:00 AM – 6:00 PM EST",
+  },
+};
 
 export default function Contact() {
   const { toast } = useToast();
@@ -20,15 +59,27 @@ export default function Contact() {
     message: "",
   });
 
+  // Load page copy from /api/content via useContent
+  const { content } = useContent("contact-page", defaultContent);
+  const displayContent = content || defaultContent;
+  const hero = displayContent.hero || defaultContent.hero;
+  const form = displayContent.form || defaultContent.form;
+  const info = displayContent.info || defaultContent.info;
+
+  const heroTitleLines =
+    typeof hero.title === "string" && hero.title.length > 0
+      ? hero.title.split("\n")
+      : ["Let's Start a", "Conversation"];
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
 
     try {
-      const response = await fetch('/api/contacts', {
-        method: 'POST',
+      const response = await fetch("/api/contacts", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           name: formData.name,
@@ -58,10 +109,10 @@ export default function Contact() {
         });
         setFormData({ name: "", email: "", company: "", message: "" });
       } else {
-        throw new Error(result.error || 'Failed to send message');
+        throw new Error(result.error || "Failed to send message");
       }
     } catch (error) {
-      console.error('Error submitting form:', error);
+      console.error("Error submitting form:", error);
       toast({
         title: "Error",
         description: "Failed to send message. Please try again later.",
@@ -87,7 +138,7 @@ export default function Contact() {
               transition={{ duration: 0.6 }}
               className="label-uppercase mb-6 block"
             >
-              Contact Us
+              {hero.label}
             </motion.span>
             <motion.h1
               initial={{ opacity: 0, y: 30 }}
@@ -95,9 +146,12 @@ export default function Contact() {
               transition={{ duration: 0.6, delay: 0.1 }}
               className="heading-display mb-8"
             >
-              Let's Start a
-              <br />
-              Conversation
+              {heroTitleLines.map((line, index) => (
+                <span key={index}>
+                  {line}
+                  {index < heroTitleLines.length - 1 && <br />}
+                </span>
+              ))}
             </motion.h1>
             <motion.p
               initial={{ opacity: 0, y: 30 }}
@@ -105,8 +159,7 @@ export default function Contact() {
               transition={{ duration: 0.6, delay: 0.2 }}
               className="body-large max-w-2xl"
             >
-              Every great transformation begins with a conversation. We'd love to
-              hear about your challenges and explore how we can help.
+              {hero.description}
             </motion.p>
           </div>
         </div>
@@ -125,12 +178,12 @@ export default function Contact() {
               className="lg:col-span-3"
             >
               <div className="bg-card border border-border p-10 md:p-12">
-                <h2 className="heading-subsection mb-8">Send Us a Message</h2>
+                <h2 className="heading-subsection mb-8">{form.title}</h2>
                 <form onSubmit={handleSubmit} className="space-y-6">
                   <div className="grid md:grid-cols-2 gap-6">
                     <div className="space-y-2">
                       <Label htmlFor="name" className="text-sm font-medium">
-                        Full Name *
+                        {form.nameLabel}
                       </Label>
                       <Input
                         id="name"
@@ -144,7 +197,7 @@ export default function Contact() {
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="email" className="text-sm font-medium">
-                        Email Address *
+                        {form.emailLabel}
                       </Label>
                       <Input
                         id="email"
@@ -160,7 +213,7 @@ export default function Contact() {
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="company" className="text-sm font-medium">
-                      Company
+                      {form.companyLabel}
                     </Label>
                     <Input
                       id="company"
@@ -173,7 +226,7 @@ export default function Contact() {
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="message" className="text-sm font-medium">
-                      How Can We Help? *
+                      {form.messageLabel}
                     </Label>
                     <Textarea
                       id="message"
@@ -197,7 +250,7 @@ export default function Contact() {
                       "Sending..."
                     ) : (
                       <>
-                        Send Message
+                        {form.submitButton}
                         <Send size={16} className="ml-2" />
                       </>
                     )}
@@ -216,11 +269,8 @@ export default function Contact() {
             >
               <div className="space-y-12">
                 <div>
-                  <h3 className="heading-subsection mb-6">Get in Touch</h3>
-                  <p className="body-regular mb-8">
-                    Our team is available to discuss your strategic needs.
-                    Reach out through any of the channels below.
-                  </p>
+                  <h3 className="heading-subsection mb-6">{info.title}</h3>
+                  <p className="body-regular mb-8">{info.description}</p>
                 </div>
 
                 <div className="space-y-8">
@@ -229,13 +279,15 @@ export default function Contact() {
                       <MapPin size={20} />
                     </div>
                     <div>
-                      <h4 className="font-medium mb-2">Headquarters</h4>
+                      <h4 className="font-medium mb-2">
+                        {info.address?.title || "Headquarters"}
+                      </h4>
                       <address className="not-italic text-muted-foreground leading-relaxed">
-                        One World Trade Center
+                        {info.address?.line1}
                         <br />
-                        Suite 8500
+                        {info.address?.line2}
                         <br />
-                        New York, NY 10007
+                        {info.address?.line3}
                       </address>
                     </div>
                   </div>
@@ -245,12 +297,14 @@ export default function Contact() {
                       <Mail size={20} />
                     </div>
                     <div>
-                      <h4 className="font-medium mb-2">Email</h4>
+                      <h4 className="font-medium mb-2">
+                        {info.email?.title || "Email"}
+                      </h4>
                       <a
-                        href="mailto:hello@apexconsulting.com"
+                        href={`mailto:${info.email?.value || "hello@apexconsulting.com"}`}
                         className="text-muted-foreground hover:text-accent transition-colors duration-300"
                       >
-                        hello@apexconsulting.com
+                        {info.email?.value || "hello@apexconsulting.com"}
                       </a>
                     </div>
                   </div>
@@ -260,12 +314,14 @@ export default function Contact() {
                       <Phone size={20} />
                     </div>
                     <div>
-                      <h4 className="font-medium mb-2">Phone</h4>
+                      <h4 className="font-medium mb-2">
+                        {info.phone?.title || "Phone"}
+                      </h4>
                       <a
-                        href="tel:+12125551234"
+                        href={`tel:${info.phone?.value || "+12125551234"}`}
                         className="text-muted-foreground hover:text-accent transition-colors duration-300"
                       >
-                        +1 (212) 555-1234
+                        {info.phone?.value || "+1 (212) 555-1234"}
                       </a>
                     </div>
                   </div>
@@ -275,7 +331,7 @@ export default function Contact() {
                   <p className="text-sm text-muted-foreground">
                     Office Hours
                     <br />
-                    Monday – Friday: 9:00 AM – 6:00 PM EST
+                    {info.hours}
                   </p>
                 </div>
               </div>

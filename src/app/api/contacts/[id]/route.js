@@ -16,7 +16,7 @@ export async function GET(request, { params }) {
   try {
     await initDB();
     
-    const { id } = params;
+    const { id } = await params;
     const contact = await Contact.findByPk(id);
 
     if (!contact) {
@@ -44,7 +44,7 @@ export async function PUT(request, { params }) {
   try {
     await initDB();
     
-    const { id } = params;
+    const { id } = await params;
     const body = await request.json();
 
     const contact = await Contact.findByPk(id);
@@ -92,7 +92,7 @@ export async function DELETE(request, { params }) {
   try {
     await initDB();
     
-    const { id } = params;
+    const { id } = await params;
     const contact = await Contact.findByPk(id);
 
     if (!contact) {

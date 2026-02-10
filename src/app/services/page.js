@@ -1,14 +1,48 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import Layout from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, TrendingUp, RefreshCw, Settings, Expand, ChevronRight } from "lucide-react";
+import {
+  ArrowRight,
+  TrendingUp,
+  RefreshCw,
+  Settings,
+  Expand,
+  ChevronRight,
+} from "lucide-react";
 import Link from "next/link";
+import { useContent } from "@/hooks/use-content";
 
-const services = [
+// Map icon names from the database to Lucide icons
+const iconMap = {
+  TrendingUp,
+  RefreshCw,
+  Settings,
+  Expand,
+};
+
+// Default page content (matches initial ServicesPageEditor defaults)
+const defaultPageContent = {
+  hero: {
+    label: "Our Services",
+    title: "Comprehensive Solutions\nfor Complex Challenges",
+    description:
+      "We deliver end-to-end consulting services that address your most pressing business challenges and unlock new opportunities for sustainable growth.",
+  },
+  cta: {
+    title: "Ready to Get Started?",
+    description:
+      "Every engagement begins with understanding your unique challenges and objectives. Let's start that conversation.",
+    buttonText: "Schedule a Consultation",
+  },
+};
+
+// Default services list used as a fallback when API has no data
+const defaultServices = [
   {
-    icon: TrendingUp,
+    icon: "TrendingUp",
     title: "Strategy Consulting",
     subtitle: "Define Your Competitive Edge",
     description:
@@ -22,7 +56,7 @@ const services = [
     ],
   },
   {
-    icon: RefreshCw,
+    icon: "RefreshCw",
     title: "Business Transformation",
     subtitle: "Navigate Change with Confidence",
     description:
@@ -36,7 +70,7 @@ const services = [
     ],
   },
   {
-    icon: Settings,
+    icon: "Settings",
     title: "Operational Excellence",
     subtitle: "Maximize Efficiency & Quality",
     description:
@@ -50,7 +84,7 @@ const services = [
     ],
   },
   {
-    icon: Expand,
+    icon: "Expand",
     title: "Growth & Expansion",
     subtitle: "Scale with Strategic Precision",
     description:
@@ -66,6 +100,50 @@ const services = [
 ];
 
 export default function Services() {
+  // Load page copy (hero + CTA) from /api/content via useContent
+  const { content: pageContent } = useContent("services-page", defaultPageContent);
+  const displayContent = pageContent || defaultPageContent;
+  const hero = displayContent.hero || defaultPageContent.hero;
+  const cta = displayContent.cta || defaultPageContent.cta;
+
+  // Split hero title on "\n" so editors can control line breaks
+  const heroTitleLines =
+    typeof hero.title === "string" && hero.title.length > 0
+      ? hero.title.split("\n")
+      : ["Comprehensive Solutions", "for Complex Challenges"];
+
+  // Services list – prefer API data, fall back to defaults
+  const [services, setServices] = useState(defaultServices);
+
+  useEffect(() => {
+    const fetchServices = async () => {
+      try {
+        const response = await fetch("/api/services?isActive=true");
+        const data = await response.json();
+
+        if (data.success && Array.isArray(data.data) && data.data.length > 0) {
+          const mapped = data.data.map((service, index) => ({
+            icon: service.icon || defaultServices[index]?.icon || "TrendingUp",
+            title: service.title,
+            subtitle: service.subtitle,
+            description: service.description,
+            capabilities: Array.isArray(service.capabilities)
+              ? service.capabilities
+              : [],
+          }));
+          setServices(mapped);
+        } else {
+          setServices(defaultServices);
+        }
+      } catch (error) {
+        console.error("Error fetching services:", error);
+        setServices(defaultServices);
+      }
+    };
+
+    fetchServices();
+  }, []);
+
   return (
     <Layout>
       {/* Hero */}
@@ -78,7 +156,7 @@ export default function Services() {
               transition={{ duration: 0.6 }}
               className="label-uppercase mb-6 block"
             >
-              Our Services
+              {hero.label}
             </motion.span>
             <motion.h1
               initial={{ opacity: 0, y: 30 }}
@@ -86,9 +164,12 @@ export default function Services() {
               transition={{ duration: 0.6, delay: 0.1 }}
               className="heading-display mb-8"
             >
-              Comprehensive Solutions
-              <br />
-              for Complex Challenges
+              {heroTitleLines.map((line, index) => (
+                <span key={index}>
+                  {line}
+                  {index < heroTitleLines.length - 1 && <br />}
+                </span>
+              ))}
             </motion.h1>
             <motion.p
               initial={{ opacity: 0, y: 30 }}
@@ -96,9 +177,7 @@ export default function Services() {
               transition={{ duration: 0.6, delay: 0.2 }}
               className="body-large max-w-2xl"
             >
-              We deliver end-to-end consulting services that address your most
-              pressing business challenges and unlock new opportunities for
-              sustainable growth.
+              {hero.description}
             </motion.p>
           </div>
         </div>
@@ -106,68 +185,83 @@ export default function Services() {
 
       {/* Services */}
       <section className="pb-20">
-        {services.map((service, index) => (
-          <div
-            key={service.title}
-            className={`section-padding ${
-              index % 2 === 0 ? "bg-background" : "bg-secondary"
-            }`}
-          >
-            <div className="container-luxury">
-              <motion.div
-                initial={{ opacity: 0, y: 40 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.8 }}
-                className="grid lg:grid-cols-2 gap-16 lg:gap-24"
-              >
-                {/* Content */}
-                <div className={index % 2 === 1 ? "lg:order-2" : ""}>
-                  <div className="flex items-center gap-4 mb-8">
-                    <div className="w-14 h-14 flex items-center justify-center bg-accent/10 text-accent">
-                      <service.icon size={28} />
-                    </div>
-                    <span className="text-sm text-muted-foreground tracking-wide">
-                      {String(index + 1).padStart(2, "0")}
-                    </span>
-                  </div>
-                  <h2 className="heading-section mb-4">{service.title}</h2>
-                  <p className="text-accent text-lg mb-6">{service.subtitle}</p>
-                  <p className="body-large mb-10">{service.description}</p>
-                  <Button variant="premium" size="premium" asChild>
-                    <Link href="/contact">
-                      Discuss Your Needs
-                      <ArrowRight size={16} className="ml-2" />
-                    </Link>
-                  </Button>
-                </div>
+        {services.map((service, index) => {
+          const IconComponent =
+            typeof service.icon === "string"
+              ? iconMap[service.icon] || TrendingUp
+              : service.icon || TrendingUp;
 
-                {/* Capabilities */}
-                <div className={index % 2 === 1 ? "lg:order-1" : ""}>
-                  <div className="bg-card border border-border p-10">
-                    <h3 className="text-sm font-sans font-semibold tracking-[0.15em] uppercase text-muted-foreground mb-8">
-                      Core Capabilities
-                    </h3>
-                    <ul className="space-y-5">
-                      {service.capabilities.map((capability) => (
-                        <li
-                          key={capability}
-                          className="flex items-center gap-4 text-foreground"
-                        >
-                          <ChevronRight
-                            size={16}
-                            className="text-accent flex-shrink-0"
-                          />
-                          <span className="font-sans">{capability}</span>
-                        </li>
-                      ))}
-                    </ul>
+          return (
+            <div
+              key={service.title || index}
+              className={`section-padding ${
+                index % 2 === 0 ? "bg-background" : "bg-secondary"
+              }`}
+            >
+              <div className="container-luxury">
+                <motion.div
+                  initial={{ opacity: 0, y: 40 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.8 }}
+                  className="grid lg:grid-cols-2 gap-16 lg:gap-24"
+                >
+                  {/* Content */}
+                  <div className={index % 2 === 1 ? "lg:order-2" : ""}>
+                    <div className="flex items-center gap-4 mb-8">
+                      <div className="w-14 h-14 flex items-center justify-center bg-accent/10 text-accent">
+                        <IconComponent size={28} />
+                      </div>
+                      <span className="text-sm text-muted-foreground tracking-wide">
+                        {String(index + 1).padStart(2, "0")}
+                      </span>
+                    </div>
+                    <h2 className="heading-section mb-4">{service.title}</h2>
+                    {service.subtitle && (
+                      <p className="text-accent text-lg mb-6">
+                        {service.subtitle}
+                      </p>
+                    )}
+                    {service.description && (
+                      <p className="body-large mb-10">
+                        {service.description}
+                      </p>
+                    )}
+                    <Button variant="premium" size="premium" asChild>
+                      <Link href="/contact">
+                        Discuss Your Needs
+                        <ArrowRight size={16} className="ml-2" />
+                      </Link>
+                    </Button>
                   </div>
-                </div>
-              </motion.div>
+
+                  {/* Capabilities */}
+                  <div className={index % 2 === 1 ? "lg:order-1" : ""}>
+                    <div className="bg-card border border-border p-10">
+                      <h3 className="text-sm font-sans font-semibold tracking-[0.15em] uppercase text-muted-foreground mb-8">
+                        Core Capabilities
+                      </h3>
+                      <ul className="space-y-5">
+                        {(service.capabilities || []).map((capability) => (
+                          <li
+                            key={capability}
+                            className="flex items-center gap-4 text-foreground"
+                          >
+                            <ChevronRight
+                              size={16}
+                              className="text-accent flex-shrink-0"
+                            />
+                            <span className="font-sans">{capability}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                </motion.div>
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </section>
 
       {/* CTA */}
@@ -180,14 +274,13 @@ export default function Services() {
             transition={{ duration: 0.6 }}
             className="max-w-2xl mx-auto"
           >
-            <h2 className="heading-section mb-6">Ready to Get Started?</h2>
+            <h2 className="heading-section mb-6">{cta.title}</h2>
             <p className="text-lg text-primary-foreground/70 mb-10">
-              Every engagement begins with understanding your unique challenges
-              and objectives. Let's start that conversation.
+              {cta.description}
             </p>
             <Button variant="premium-gold" size="premium" asChild>
               <Link href="/contact">
-                Schedule a Consultation
+                {cta.buttonText}
                 <ArrowRight size={16} className="ml-2" />
               </Link>
             </Button>

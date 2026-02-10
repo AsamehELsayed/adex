@@ -16,7 +16,7 @@ export async function GET(request, { params }) {
   try {
     await initDB();
     
-    const { id } = params;
+    const { id } = await params;
     const service = await Service.findByPk(id);
 
     if (!service) {
@@ -44,7 +44,7 @@ export async function PUT(request, { params }) {
   try {
     await initDB();
     
-    const { id } = params;
+    const { id } = await params;
     const body = await request.json();
 
     const service = await Service.findByPk(id);
@@ -95,7 +95,7 @@ export async function DELETE(request, { params }) {
   try {
     await initDB();
     
-    const { id } = params;
+    const { id } = await params;
     const service = await Service.findByPk(id);
 
     if (!service) {
