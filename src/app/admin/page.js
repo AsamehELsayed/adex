@@ -15,7 +15,8 @@ import {
   Save,
   Loader2,
   Image as ImageIcon,
-  Eye
+  Eye,
+  Layout as LayoutIcon
 } from "lucide-react";
 import HeroEditor from "@/components/admin/HeroEditor";
 import AboutEditor from "@/components/admin/AboutEditor";
@@ -29,6 +30,7 @@ import AboutPageEditor from "@/components/admin/AboutPageEditor";
 import ServicesPageEditor from "@/components/admin/ServicesPageEditor";
 import VisionPageEditor from "@/components/admin/VisionPageEditor";
 import ImageManager from "@/components/admin/ImageManager";
+import FooterEditor from "@/components/admin/FooterEditor";
 
 export default function AdminDashboard() {
   const [user, setUser] = useState(null);
@@ -111,7 +113,7 @@ export default function AdminDashboard() {
       {/* Main Content */}
       <div className="container-luxury py-8">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-7 mb-8">
+          <TabsList className="grid w-full grid-cols-8 mb-8">
             <TabsTrigger value="home">
               <Home className="mr-2 h-4 w-4" />
               Home Page
@@ -135,6 +137,10 @@ export default function AdminDashboard() {
             <TabsTrigger value="contact-page">
               <Settings className="mr-2 h-4 w-4" />
               Contact Page
+            </TabsTrigger>
+            <TabsTrigger value="footer">
+              <LayoutIcon className="mr-2 h-4 w-4" />
+              Footer
             </TabsTrigger>
             <TabsTrigger value="images">
               <ImageIcon className="mr-2 h-4 w-4" />
@@ -177,6 +183,13 @@ export default function AdminDashboard() {
 
           <TabsContent value="contact-page" className="space-y-8">
             <ContactPageEditor />
+          </TabsContent>
+
+          <TabsContent value="footer" className="space-y-8">
+            <div className="bg-card border border-border p-6">
+              <h2 className="text-xl font-semibold mb-6">Footer Settings</h2>
+              <FooterEditor />
+            </div>
           </TabsContent>
 
           <TabsContent value="images" className="space-y-8">
