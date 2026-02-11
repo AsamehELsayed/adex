@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Mail, Phone, MapPin, Send } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useContent } from "@/hooks/use-content";
+import { COUNTRY_PHONE_CODES } from "@/constants/countryPhoneCodes";
 
 // Default content (matches ContactPageEditor defaults)
 const defaultContent = {
@@ -24,6 +25,7 @@ const defaultContent = {
     nameLabel: "Full Name *",
     emailLabel: "Email Address *",
     companyLabel: "Company",
+    phoneLabel: "Phone Number *",
     messageLabel: "How Can We Help? *",
     submitButton: "Send Message",
   },
@@ -55,6 +57,8 @@ export default function Contact() {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
+    countryCode: "+1",
+    phone: "",
     company: "",
     message: "",
   });
@@ -76,6 +80,8 @@ export default function Contact() {
     setIsSubmitting(true);
 
     try {
+      const fullPhone = `${formData.countryCode} ${formData.phone}`.trim();
+
       const response = await fetch("/api/contacts", {
         method: "POST",
         headers: {
@@ -89,6 +95,9 @@ export default function Contact() {
           formData: {
             name: formData.name,
             email: formData.email,
+            countryCode: formData.countryCode,
+            phone: formData.phone,
+            fullPhone,
             company: formData.company,
             message: formData.message,
           },
@@ -107,7 +116,14 @@ export default function Contact() {
           description:
             "Thank you for reaching out. A member of our team will be in touch within 24 hours.",
         });
-        setFormData({ name: "", email: "", company: "", message: "" });
+        setFormData({
+          name: "",
+          email: "",
+          countryCode: "+1",
+          phone: "",
+          company: "",
+          message: "",
+        });
       } else {
         throw new Error(result.error || "Failed to send message");
       }
@@ -223,6 +239,37 @@ export default function Contact() {
                       className="border-border focus:border-accent rounded-none h-12"
                       placeholder="Your Company Name"
                     />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="phone" className="text-sm font-medium">
+                      {form.phoneLabel || "Phone Number *"}
+                    </Label>
+                    <div className="flex gap-3">
+                      <select
+                        id="countryCode"
+                        name="countryCode"
+                        value={formData.countryCode}
+                        onChange={handleChange}
+                        className="border border-border bg-background h-12 px-3 text-sm focus:outline-none focus-visible:ring-1 focus-visible:ring-accent"
+                        required
+                      >
+                        {COUNTRY_PHONE_CODES.map((country) => (
+                          <option key={country.code} value={country.dialCode}>
+                            {country.name} ({country.dialCode})
+                          </option>
+                        ))}
+                      </select>
+                      <Input
+                        id="phone"
+                        name="phone"
+                        type="tel"
+                        value={formData.phone}
+                        onChange={handleChange}
+                        required
+                        className="flex-1 border-border focus:border-accent rounded-none h-12"
+                        placeholder="555 123 4567"
+                      />
+                    </div>
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="message" className="text-sm font-medium">

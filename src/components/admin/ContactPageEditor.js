@@ -20,6 +20,7 @@ export default function ContactPageEditor() {
       nameLabel: "Full Name *",
       emailLabel: "Email Address *",
       companyLabel: "Company",
+      phoneLabel: "Phone Number *",
       messageLabel: "How Can We Help? *",
       submitButton: "Send Message",
     },
@@ -153,6 +154,11 @@ export default function ContactPageEditor() {
                 placeholder="Email Label"
               />
             </div>
+            <Input
+              value={content.form.phoneLabel}
+              onChange={(e) => setContent({ ...content, form: { ...content.form, phoneLabel: e.target.value } })}
+              placeholder="Phone Label"
+            />
             <Input
               value={content.form.companyLabel}
               onChange={(e) => setContent({ ...content, form: { ...content.form, companyLabel: e.target.value } })}
