@@ -6,7 +6,7 @@ import { useRef } from "react";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { useContent } from "@/hooks/use-content";
+import { useLocalizedContent } from "@/hooks/use-localized-content";
 
 const CTASection = () => {
   const ref = useRef(null);
@@ -20,7 +20,7 @@ const CTASection = () => {
     secondaryButton: "View Our Services",
   };
 
-  const { content } = useContent("cta-section", defaultContent);
+  const { content } = useLocalizedContent("cta-section", defaultContent);
   const displayContent = content || defaultContent;
   const titleLines = displayContent.title?.split("\n") || ["Let's Build Your", "Next Chapter"];
 

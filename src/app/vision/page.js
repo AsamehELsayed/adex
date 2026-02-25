@@ -3,21 +3,15 @@
 import { motion } from "framer-motion";
 import Layout from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Eye, Compass, Lightbulb, Shield, Globe, Heart } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
-import { useContent } from "@/hooks/use-content";
+import { useLocalizedContent } from "@/hooks/use-localized-content";
+import { iconMap } from "@/lib/lucide-icons";
 
-// Icon mapping for dynamic icon rendering
-const iconMap = {
-  Lightbulb,
-  Shield,
-  Globe,
-  Heart,
-  Eye,
-  Compass,
-  // Add more icons as needed - just import them above and add to this map
-};
+const DEFAULT_ICON = iconMap.Lightbulb;
+const EyeIcon = iconMap.Eye;
+const CompassIcon = iconMap.Compass;
 
 // Default content (mirrors VisionPageEditor defaults)
 const defaultContent = {
@@ -71,7 +65,7 @@ const defaultContent = {
 };
 
 export default function Vision() {
-  const { content } = useContent("vision-page", defaultContent);
+  const { content } = useLocalizedContent("vision-page", defaultContent);
   const displayContent = content || defaultContent;
 
   const hero = displayContent.hero || defaultContent.hero;
@@ -82,8 +76,8 @@ export default function Vision() {
 
   // Helper function to get icon component from string name
   const getIcon = (iconName) => {
-    if (!iconName) return Lightbulb;
-    return iconMap[iconName] || Lightbulb;
+    if (!iconName) return DEFAULT_ICON;
+    return iconMap[iconName] || DEFAULT_ICON;
   };
 
   const heroTitleLines = typeof hero.title === "string" && hero.title.length > 0
@@ -160,7 +154,7 @@ export default function Vision() {
               className="flex items-start gap-6"
             >
               <div className="flex-shrink-0 w-16 h-16 flex items-center justify-center bg-accent text-accent-foreground">
-                <Eye size={32} />
+                {EyeIcon && <EyeIcon size={32} />}
               </div>
               <div>
                 <span className="label-uppercase mb-4 block">{vision.label}</span>
@@ -186,7 +180,7 @@ export default function Vision() {
               className="flex items-start gap-6"
             >
               <div className="flex-shrink-0 w-16 h-16 flex items-center justify-center bg-primary text-primary-foreground">
-                <Compass size={32} />
+                {CompassIcon && <CompassIcon size={32} />}
               </div>
               <div>
                 <span className="label-uppercase mb-4 block">{mission.label}</span>

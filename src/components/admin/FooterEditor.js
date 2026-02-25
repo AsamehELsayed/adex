@@ -26,6 +26,7 @@ export default function FooterEditor() {
       address: "One World Trade Center\nSuite 8500\nNew York, NY 10007",
       email: "hello@apexconsulting.com",
       phone: "+1 (212) 555-1234",
+      whatsappPhone: "",
     },
     bottomLinks: [
       { name: "Privacy Policy", url: "#" },
@@ -311,6 +312,20 @@ export default function FooterEditor() {
                   })
                 }
                 placeholder="+1 (212) 555-1234"
+              />
+            </div>
+
+            <div className="space-y-2 col-span-2">
+              <Label>WhatsApp Number (floating button)</Label>
+              <Input
+                value={content.contactInfo.whatsappPhone ?? ""}
+                onChange={(e) =>
+                  setContent({
+                    ...content,
+                    contactInfo: { ...content.contactInfo, whatsappPhone: e.target.value },
+                  })
+                }
+                placeholder="+1 212 555 1234 — leave empty to use phone above"
               />
             </div>
           </div>

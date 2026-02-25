@@ -1,0 +1,67 @@
+/**
+ * Shared Lucide icon config for dashboard icon selection and display.
+ * Add icons here to make them available in the IconSelect dropdown and on display pages.
+ */
+import {
+  Award,
+  BarChart3,
+  Briefcase,
+  CheckCircle,
+  Compass,
+  Expand,
+  Eye,
+  Globe,
+  Heart,
+  Lightbulb,
+  RefreshCw,
+  Settings,
+  Shield,
+  Star,
+  Target,
+  TrendingUp,
+  Users,
+  Zap,
+} from "lucide-react";
+
+export const iconMap = {
+  Award,
+  BarChart3,
+  Briefcase,
+  CheckCircle,
+  Compass,
+  Expand,
+  Eye,
+  Globe,
+  Heart,
+  Lightbulb,
+  RefreshCw,
+  Settings,
+  Shield,
+  Star,
+  Target,
+  TrendingUp,
+  Users,
+  Zap,
+};
+
+export const ICON_OPTIONS = [
+  { value: "", label: "Select an icon" },
+  { value: "TrendingUp", label: "Trending Up" },
+  { value: "RefreshCw", label: "Refresh" },
+  { value: "Settings", label: "Settings" },
+  { value: "Expand", label: "Expand" },
+  { value: "Lightbulb", label: "Lightbulb" },
+  { value: "Shield", label: "Shield" },
+  { value: "Globe", label: "Globe" },
+  { value: "Heart", label: "Heart" },
+  { value: "Target", label: "Target" },
+  { value: "Award", label: "Award" },
+  { value: "Users", label: "Users" },
+  { value: "Briefcase", label: "Briefcase" },
+  { value: "BarChart3", label: "Bar Chart" },
+  { value: "Zap", label: "Zap" },
+  { value: "CheckCircle", label: "Check Circle" },
+  { value: "Star", label: "Star" },
+  { value: "Eye", label: "Eye" },
+  { value: "Compass", label: "Compass" },
+];

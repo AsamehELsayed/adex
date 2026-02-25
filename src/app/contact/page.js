@@ -9,7 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Mail, Phone, MapPin, Send } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { useContent } from "@/hooks/use-content";
+import { useLocalizedContent } from "@/hooks/use-localized-content";
 import { COUNTRY_PHONE_CODES } from "@/constants/countryPhoneCodes";
 
 // Default content (matches ContactPageEditor defaults)
@@ -64,7 +64,7 @@ export default function Contact() {
   });
 
   // Load page copy from /api/content via useContent
-  const { content } = useContent("contact-page", defaultContent);
+  const { content, language } = useLocalizedContent("contact-page", defaultContent);
   const displayContent = content || defaultContent;
   const hero = displayContent.hero || defaultContent.hero;
   const form = displayContent.form || defaultContent.form;
@@ -112,9 +112,11 @@ export default function Contact() {
 
       if (result.success) {
         toast({
-          title: "Message Sent",
+          title: language === "ar" ? "تم إرسال الرسالة" : "Message Sent",
           description:
-            "Thank you for reaching out. A member of our team will be in touch within 24 hours.",
+            language === "ar"
+              ? "شكرا لتواصلك معنا. سيتواصل معك أحد أعضاء فريقنا خلال 24 ساعة."
+              : "Thank you for reaching out. A member of our team will be in touch within 24 hours.",
         });
         setFormData({
           name: "",
@@ -130,8 +132,11 @@ export default function Contact() {
     } catch (error) {
       console.error("Error submitting form:", error);
       toast({
-        title: "Error",
-        description: "Failed to send message. Please try again later.",
+        title: language === "ar" ? "خطأ" : "Error",
+        description:
+          language === "ar"
+            ? "فشل إرسال الرسالة. يرجى المحاولة مرة أخرى لاحقا."
+            : "Failed to send message. Please try again later.",
       });
     } finally {
       setIsSubmitting(false);
@@ -294,7 +299,7 @@ export default function Contact() {
                     className="w-full md:w-auto"
                   >
                     {isSubmitting ? (
-                      "Sending..."
+                      language === "ar" ? "جار الإرسال..." : "Sending..."
                     ) : (
                       <>
                         {form.submitButton}
@@ -374,13 +379,7 @@ export default function Contact() {
                   </div>
                 </div>
 
-                <div className="pt-8 border-t border-border">
-                  <p className="text-sm text-muted-foreground">
-                    Office Hours
-                    <br />
-                    {info.hours}
-                  </p>
-                </div>
+                
               </div>
             </motion.div>
           </div>

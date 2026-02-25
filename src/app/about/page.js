@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight, CheckCircle } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
-import { useContent } from "@/hooks/use-content";
+import { useLocalizedContent } from "@/hooks/use-localized-content";
 
 // Default content (mirrors AboutPageEditor defaults)
 const defaultContent = {
@@ -60,7 +60,7 @@ const defaultContent = {
 };
 
 export default function About() {
-  const { content } = useContent("about-page", defaultContent);
+  const { content } = useLocalizedContent("about-page", defaultContent);
   const displayContent = content || defaultContent;
 
   const hero = displayContent.hero || defaultContent.hero;
@@ -149,12 +149,7 @@ export default function About() {
                   className="object-cover"
                 />
               </div>
-              <div className="absolute -bottom-8 right-8 bg-accent text-accent-foreground p-8">
-                <span className="block font-serif text-5xl font-medium">
-                  {story.foundedYear || "1998"}
-                </span>
-                <span className="text-sm">Founded</span>
-              </div>
+            
             </motion.div>
           </div>
         </div>

@@ -7,9 +7,11 @@
     "dev": "next dev --webpack",
     "build": "next build",
     "start": "next start",
-    "init-db": "node src/scripts/init-db.mjs",
+    "create-db": "node src/scripts/create-database.mjs",
+    "init-db": "node src/scripts/create-database.mjs && node src/scripts/init-db.mjs",
     "create-admin": "node src/scripts/create-admin.mjs",
-    "seed-users": "node src/scripts/seed-users.mjs"
+    "seed-users": "node src/scripts/seed-users.mjs",
+    "seed-ar": "node src/scripts/seed-arabic.mjs"
   },
   "dependencies": {
     "@fontsource/inter": "^5.2.8",

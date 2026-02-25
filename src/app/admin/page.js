@@ -16,7 +16,8 @@ import {
   Loader2,
   Image as ImageIcon,
   Eye,
-  Layout as LayoutIcon
+  Layout as LayoutIcon,
+  Languages
 } from "lucide-react";
 import HeroEditor from "@/components/admin/HeroEditor";
 import AboutEditor from "@/components/admin/AboutEditor";
@@ -31,6 +32,7 @@ import ServicesPageEditor from "@/components/admin/ServicesPageEditor";
 import VisionPageEditor from "@/components/admin/VisionPageEditor";
 import ImageManager from "@/components/admin/ImageManager";
 import FooterEditor from "@/components/admin/FooterEditor";
+import ArabicTranslationsEditor from "@/components/admin/ArabicTranslationsEditor";
 
 export default function AdminDashboard() {
   const [user, setUser] = useState(null);
@@ -113,7 +115,7 @@ export default function AdminDashboard() {
       {/* Main Content */}
       <div className="container-luxury py-8">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-8 mb-8">
+          <TabsList className="grid w-full grid-cols-9 mb-8">
             <TabsTrigger value="home">
               <Home className="mr-2 h-4 w-4" />
               Home Page
@@ -145,6 +147,10 @@ export default function AdminDashboard() {
             <TabsTrigger value="images">
               <ImageIcon className="mr-2 h-4 w-4" />
               Images
+            </TabsTrigger>
+            <TabsTrigger value="translations">
+              <Languages className="mr-2 h-4 w-4" />
+              Arabic
             </TabsTrigger>
           </TabsList>
 
@@ -194,6 +200,10 @@ export default function AdminDashboard() {
 
           <TabsContent value="images" className="space-y-8">
             <ImageManager />
+          </TabsContent>
+
+          <TabsContent value="translations" className="space-y-8">
+            <ArabicTranslationsEditor />
           </TabsContent>
         </Tabs>
       </div>

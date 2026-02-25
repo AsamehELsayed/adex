@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { Save, Loader2, Plus, Trash2, Edit } from "lucide-react";
+import IconSelect from "@/components/admin/IconSelect";
 import {
   Dialog,
   DialogContent,
@@ -51,10 +52,19 @@ export default function ServicesManager() {
         : "/api/services";
       const method = editingService ? "PUT" : "POST";
 
+      const payload = {
+        ...serviceData,
+        serviceData: {
+          ...(editingService?.serviceData || {}),
+          ar: serviceData.ar || {},
+        },
+      };
+      delete payload.ar;
+
       const response = await fetch(url, {
         method,
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(serviceData),
+        body: JSON.stringify(payload),
       });
 
       const result = await response.json();
@@ -211,6 +221,12 @@ function ServiceForm({ service, onSave, isSaving }) {
     description: "",
     icon: "",
     capabilities: [],
+    ar: {
+      title: "",
+      subtitle: "",
+      description: "",
+      capabilities: [],
+    },
     order: 0,
     isActive: true,
   });
@@ -223,13 +239,36 @@ function ServiceForm({ service, onSave, isSaving }) {
         description: service.description || "",
         icon: service.icon || "",
         capabilities: service.capabilities || [],
+        ar: {
+          title: service.serviceData?.ar?.title || "",
+          subtitle: service.serviceData?.ar?.subtitle || "",
+          description: service.serviceData?.ar?.description || "",
+          capabilities: service.serviceData?.ar?.capabilities || [],
+        },
         order: service.order || 0,
         isActive: service.isActive !== undefined ? service.isActive : true,
       });
+      return;
     }
+    setFormData({
+      title: "",
+      subtitle: "",
+      description: "",
+      icon: "",
+      capabilities: [],
+      ar: {
+        title: "",
+        subtitle: "",
+        description: "",
+        capabilities: [],
+      },
+      order: 0,
+      isActive: true,
+    });
   }, [service]);
 
   const [newCapability, setNewCapability] = useState("");
+  const [newCapabilityAr, setNewCapabilityAr] = useState("");
 
   const addCapability = () => {
     if (newCapability.trim()) {
@@ -245,6 +284,29 @@ function ServiceForm({ service, onSave, isSaving }) {
     setFormData({
       ...formData,
       capabilities: formData.capabilities.filter((_, i) => i !== index),
+    });
+  };
+
+  const addCapabilityAr = () => {
+    if (newCapabilityAr.trim()) {
+      setFormData({
+        ...formData,
+        ar: {
+          ...formData.ar,
+          capabilities: [...(formData.ar.capabilities || []), newCapabilityAr.trim()],
+        },
+      });
+      setNewCapabilityAr("");
+    }
+  };
+
+  const removeCapabilityAr = (index) => {
+    setFormData({
+      ...formData,
+      ar: {
+        ...formData.ar,
+        capabilities: (formData.ar.capabilities || []).filter((_, i) => i !== index),
+      },
     });
   };
 
@@ -285,14 +347,54 @@ function ServiceForm({ service, onSave, isSaving }) {
         />
       </div>
 
-      <div className="space-y-2">
-        <Label>Icon (Lucide icon name)</Label>
-        <Input
-          value={formData.icon}
-          onChange={(e) => setFormData({ ...formData, icon: e.target.value })}
-          placeholder="e.g., TrendingUp"
-        />
+      <div className="space-y-3 p-4 border border-border rounded-lg bg-muted/30">
+        <h4 className="font-semibold text-sm">Arabic Translation</h4>
+        <div className="space-y-2">
+          <Label>Arabic Title</Label>
+          <Input
+            dir="rtl"
+            value={formData.ar.title}
+            onChange={(e) =>
+              setFormData({ ...formData, ar: { ...formData.ar, title: e.target.value } })
+            }
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Label>Arabic Subtitle</Label>
+          <Input
+            dir="rtl"
+            value={formData.ar.subtitle}
+            onChange={(e) =>
+              setFormData({
+                ...formData,
+                ar: { ...formData.ar, subtitle: e.target.value },
+              })
+            }
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Label>Arabic Description</Label>
+          <Textarea
+            dir="rtl"
+            value={formData.ar.description}
+            onChange={(e) =>
+              setFormData({
+                ...formData,
+                ar: { ...formData.ar, description: e.target.value },
+              })
+            }
+            rows={3}
+          />
+        </div>
       </div>
+
+      <IconSelect
+        label="Icon"
+        value={formData.icon}
+        onChange={(icon) => setFormData({ ...formData, icon })}
+      />
 
       <div className="space-y-2">
         <Label>Capabilities</Label>
@@ -324,6 +426,47 @@ function ServiceForm({ service, onSave, isSaving }) {
                 variant="ghost"
                 size="sm"
                 onClick={() => removeCapability(index)}
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="space-y-2 p-4 border border-border rounded-lg bg-muted/30">
+        <Label>Arabic Capabilities</Label>
+        <div className="flex gap-2">
+          <Input
+            dir="rtl"
+            value={newCapabilityAr}
+            onChange={(e) => setNewCapabilityAr(e.target.value)}
+            onKeyPress={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                addCapabilityAr();
+              }
+            }}
+            placeholder="أضف ميزة"
+          />
+          <Button type="button" onClick={addCapabilityAr}>
+            Add
+          </Button>
+        </div>
+        <div className="space-y-1 mt-2">
+          {(formData.ar.capabilities || []).map((cap, index) => (
+            <div
+              key={index}
+              className="flex items-center justify-between p-2 bg-secondary rounded"
+            >
+              <span className="text-sm" dir="rtl">
+                {cap}
+              </span>
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={() => removeCapabilityAr(index)}
               >
                 <Trash2 className="h-4 w-4" />
               </Button>

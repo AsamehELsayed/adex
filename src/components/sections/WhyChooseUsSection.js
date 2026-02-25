@@ -3,15 +3,10 @@
 import { motion } from "framer-motion";
 import { useInView } from "framer-motion";
 import { useRef } from "react";
-import { Target, Award, Users } from "lucide-react";
-import { useContent } from "@/hooks/use-content";
+import { useLocalizedContent } from "@/hooks/use-localized-content";
+import { iconMap } from "@/lib/lucide-icons";
 
-// Icon mapping
-const iconMap = {
-  Target,
-  Award,
-  Users,
-};
+const DEFAULT_ICON = iconMap.Target;
 
 const WhyChooseUsSection = () => {
   const ref = useRef(null);
@@ -45,7 +40,7 @@ const WhyChooseUsSection = () => {
     ],
   };
 
-  const { content } = useContent("why-choose-us-section", defaultContent);
+  const { content } = useLocalizedContent("why-choose-us-section", defaultContent);
   const displayContent = content || defaultContent;
   const titleLines = displayContent.title?.split("\n") || ["Why Leaders Choose", "to Partner With Us"];
 
@@ -74,8 +69,8 @@ const WhyChooseUsSection = () => {
         <div className="grid lg:grid-cols-3 gap-12 lg:gap-8">
           {(displayContent.reasons || []).map((reason, index) => {
             const IconComponent = typeof reason.icon === 'string' 
-              ? iconMap[reason.icon] || Target 
-              : reason.icon || Target;
+              ? iconMap[reason.icon] || DEFAULT_ICON 
+              : reason.icon || DEFAULT_ICON;
             
             return (
               <motion.div

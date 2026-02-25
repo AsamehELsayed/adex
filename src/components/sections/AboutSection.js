@@ -6,7 +6,7 @@ import { useRef } from "react";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
-import { useContent } from "@/hooks/use-content";
+import { useLocalizedContent } from "@/hooks/use-localized-content";
 
 const AboutSection = () => {
   const ref = useRef(null);
@@ -22,7 +22,7 @@ const AboutSection = () => {
     statLabel: "Years of Excellence",
   };
 
-  const { content, isLoading } = useContent("about-section", defaultContent);
+  const { content } = useLocalizedContent("about-section", defaultContent);
   const displayContent = content || defaultContent;
   const titleLines = displayContent.title?.split("\n") || ["Your Strategic Partner", "for Lasting Impact"];
 

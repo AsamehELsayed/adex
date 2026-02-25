@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { Save, Loader2, Plus, Trash2 } from "lucide-react";
+import IconSelect from "@/components/admin/IconSelect";
 
 export default function VisionPageEditor() {
   const [content, setContent] = useState({
@@ -267,10 +268,10 @@ export default function VisionPageEditor() {
                   <Trash2 className="h-4 w-4" />
                 </Button>
               </div>
-              <Input
+              <IconSelect
+                label="Icon"
                 value={value.icon}
-                onChange={(e) => updateValue(index, "icon", e.target.value)}
-                placeholder="Icon Name (e.g., Lightbulb, Shield, Globe, Heart)"
+                onChange={(icon) => updateValue(index, "icon", icon)}
               />
               <Input
                 value={value.title}

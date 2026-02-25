@@ -7,19 +7,26 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useLanguage } from "@/contexts/language-context";
 
 const navLinks = [
-  { name: "Home", path: "/" },
-  { name: "About", path: "/about" },
-  { name: "Services", path: "/services" },
-  { name: "Vision", path: "/vision" },
-  { name: "Contact", path: "/contact" },
+  { name: "Home", nameAr: "الرئيسية", path: "/" },
+  { name: "About", nameAr: "من نحن", path: "/about" },
+  { name: "Services", nameAr: "الخدمات", path: "/services" },
+  { name: "Vision", nameAr: "الرؤية", path: "/vision" },
+  { name: "Contact", nameAr: "اتصل بنا", path: "/contact" },
 ];
 
 const Header = () => {
   const pathname = usePathname();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { language, toggleLanguage } = useLanguage();
+
+  const t = {
+    cta: language === "ar" ? "تواصل معنا" : "Get in Touch",
+    toggle: language === "ar" ? "EN" : "AR",
+  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -86,7 +93,7 @@ const Header = () => {
                     : "text-muted-foreground hover:text-foreground"
                 }`}
               >
-                {link.name}
+                {language === "ar" ? link.nameAr || link.name : link.name}
                 {pathname === link.path && (
                   <motion.span
                     layoutId="underline"
@@ -98,9 +105,12 @@ const Header = () => {
           </div>
 
           {/* CTA Button */}
-          <div className="hidden lg:block">
+          <div className="hidden lg:flex items-center gap-2">
+            <Button variant="outline" size="sm" onClick={toggleLanguage}>
+              {t.toggle}
+            </Button>
             <Button variant="premium" size="premium" asChild>
-              <Link href="/contact">Get in Touch</Link>
+              <Link href="/contact">{t.cta}</Link>
             </Button>
           </div>
 
@@ -196,7 +206,7 @@ const Header = () => {
                                 : "text-muted-foreground hover:text-foreground hover:bg-muted/30"
                             }`}
                           >
-                            {link.name}
+                            {language === "ar" ? link.nameAr || link.name : link.name}
                             {isActive && (
                               <motion.div
                                 layoutId="mobileActiveIndicator"
@@ -216,11 +226,24 @@ const Header = () => {
                   </nav>
 
                   {/* CTA Button */}
-                  <div className="p-6 border-t border-border">
+                  <div className="p-6 border-t border-border space-y-3">
                     <motion.div
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: 0.3, duration: 0.3 }}
+                    >
+                      <Button
+                        variant="outline"
+                        className="w-full"
+                        onClick={toggleLanguage}
+                      >
+                        {t.toggle}
+                      </Button>
+                    </motion.div>
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.35, duration: 0.3 }}
                     >
                       <Button 
                         variant="premium" 
@@ -229,7 +252,7 @@ const Header = () => {
                         asChild
                       >
                         <Link href="/contact" onClick={() => setIsMobileMenuOpen(false)}>
-                          Get in Touch
+                          {t.cta}
                         </Link>
                       </Button>
                     </motion.div>

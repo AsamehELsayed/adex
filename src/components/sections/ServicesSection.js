@@ -3,17 +3,12 @@
 import { motion } from "framer-motion";
 import { useInView } from "framer-motion";
 import { useRef, useState, useEffect } from "react";
-import { ArrowRight, TrendingUp, RefreshCw, Settings, Expand } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import Link from "next/link";
-import { useContent } from "@/hooks/use-content";
+import { useLocalizedContent } from "@/hooks/use-localized-content";
+import { iconMap } from "@/lib/lucide-icons";
 
-// Icon mapping
-const iconMap = {
-  TrendingUp,
-  RefreshCw,
-  Settings,
-  Expand,
-};
+const DEFAULT_ICON = iconMap.TrendingUp;
 
 const ServicesSection = () => {
   const ref = useRef(null);
@@ -48,7 +43,7 @@ const ServicesSection = () => {
     ],
   };
 
-  const { content } = useContent("services-section", defaultContent);
+  const { content, language } = useLocalizedContent("services-section", defaultContent);
   const displayContent = content || defaultContent;
   const titleLines = displayContent.title?.split("\n") || ["Comprehensive Solutions for", "Complex Challenges"];
 
@@ -60,7 +55,22 @@ const ServicesSection = () => {
         const data = await response.json();
         if (data.success && data.data.length > 0) {
           // Use services from API, limit to 4 for home page
-          setServices(data.data.slice(0, 4));
+          const mapped = data.data.slice(0, 4).map((service) => {
+            const ar = service.serviceData?.ar || {};
+            if (language !== "ar") {
+              return service;
+            }
+            return {
+              ...service,
+              title: ar.title || service.title,
+              subtitle: ar.subtitle || service.subtitle,
+              description: ar.description || service.description,
+              capabilities: Array.isArray(ar.capabilities)
+                ? ar.capabilities
+                : service.capabilities,
+            };
+          });
+          setServices(mapped);
         } else if (displayContent.services) {
           // Fallback to content services
           setServices(displayContent.services);
@@ -75,7 +85,7 @@ const ServicesSection = () => {
     };
 
     fetchServices();
-  }, [displayContent.services]);
+  }, [displayContent.services, language]);
 
   const servicesToDisplay = services.length > 0 ? services : (displayContent.services || []);
 
@@ -107,8 +117,8 @@ const ServicesSection = () => {
         <div className="grid md:grid-cols-2 gap-8">
           {servicesToDisplay.map((service, index) => {
             const IconComponent = typeof service.icon === 'string' 
-              ? iconMap[service.icon] || TrendingUp 
-              : service.icon || TrendingUp;
+              ? iconMap[service.icon] || DEFAULT_ICON 
+              : service.icon || DEFAULT_ICON;
             
             return (
               <motion.div
@@ -129,7 +139,7 @@ const ServicesSection = () => {
                       href="/services"
                       className="inline-flex items-center gap-2 text-sm text-foreground hover:text-accent transition-colors duration-300 group/link"
                     >
-                      Learn More
+                      {language === "ar" ? "اعرف المزيد" : "Learn More"}
                       <ArrowRight
                         size={14}
                         className="group-hover/link:translate-x-1 transition-transform duration-300"

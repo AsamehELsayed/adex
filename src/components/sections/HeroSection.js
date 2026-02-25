@@ -5,7 +5,7 @@ import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import { useContent } from "@/hooks/use-content";
+import { useLocalizedContent } from "@/hooks/use-localized-content";
 
 const HeroSection = () => {
   const defaultContent = {
@@ -16,7 +16,7 @@ const HeroSection = () => {
     secondaryButton: "Explore Services",
   };
 
-  const { content, isLoading } = useContent("hero-section", defaultContent);
+  const { content, isLoading, language } = useLocalizedContent("hero-section", defaultContent);
   const displayContent = content || defaultContent;
 
   // Split title by \n for line breaks
@@ -119,7 +119,7 @@ const HeroSection = () => {
       >
         <div className="flex flex-col items-center gap-3">
           <span className="text-xs tracking-widest uppercase text-muted-foreground">
-            Scroll
+            {language === "ar" ? "مرر" : "Scroll"}
           </span>
           <div className="w-px h-12 bg-gradient-to-b from-muted-foreground to-transparent" />
         </div>

@@ -4,24 +4,12 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import Layout from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
-import {
-  ArrowRight,
-  TrendingUp,
-  RefreshCw,
-  Settings,
-  Expand,
-  ChevronRight,
-} from "lucide-react";
+import { ArrowRight, ChevronRight } from "lucide-react";
 import Link from "next/link";
-import { useContent } from "@/hooks/use-content";
+import { useLocalizedContent } from "@/hooks/use-localized-content";
+import { iconMap } from "@/lib/lucide-icons";
 
-// Map icon names from the database to Lucide icons
-const iconMap = {
-  TrendingUp,
-  RefreshCw,
-  Settings,
-  Expand,
-};
+const DEFAULT_ICON = iconMap.TrendingUp;
 
 // Default page content (matches initial ServicesPageEditor defaults)
 const defaultPageContent = {
@@ -101,7 +89,10 @@ const defaultServices = [
 
 export default function Services() {
   // Load page copy (hero + CTA) from /api/content via useContent
-  const { content: pageContent } = useContent("services-page", defaultPageContent);
+  const { content: pageContent, language } = useLocalizedContent(
+    "services-page",
+    defaultPageContent
+  );
   const displayContent = pageContent || defaultPageContent;
   const hero = displayContent.hero || defaultPageContent.hero;
   const cta = displayContent.cta || defaultPageContent.cta;
@@ -122,15 +113,26 @@ export default function Services() {
         const data = await response.json();
 
         if (data.success && Array.isArray(data.data) && data.data.length > 0) {
-          const mapped = data.data.map((service, index) => ({
-            icon: service.icon || defaultServices[index]?.icon || "TrendingUp",
-            title: service.title,
-            subtitle: service.subtitle,
-            description: service.description,
-            capabilities: Array.isArray(service.capabilities)
-              ? service.capabilities
-              : [],
-          }));
+          const mapped = data.data.map((service, index) => {
+            const ar = service.serviceData?.ar || {};
+            const capabilities =
+              language === "ar" && Array.isArray(ar.capabilities)
+                ? ar.capabilities
+                : Array.isArray(service.capabilities)
+                ? service.capabilities
+                : [];
+            return {
+              icon: service.icon || defaultServices[index]?.icon || "TrendingUp",
+              title: language === "ar" ? ar.title || service.title : service.title,
+              subtitle:
+                language === "ar" ? ar.subtitle || service.subtitle : service.subtitle,
+              description:
+                language === "ar"
+                  ? ar.description || service.description
+                  : service.description,
+              capabilities,
+            };
+          });
           setServices(mapped);
         } else {
           setServices(defaultServices);
@@ -142,7 +144,7 @@ export default function Services() {
     };
 
     fetchServices();
-  }, []);
+  }, [language]);
 
   return (
     <Layout>
@@ -188,8 +190,8 @@ export default function Services() {
         {services.map((service, index) => {
           const IconComponent =
             typeof service.icon === "string"
-              ? iconMap[service.icon] || TrendingUp
-              : service.icon || TrendingUp;
+              ? iconMap[service.icon] || DEFAULT_ICON
+              : service.icon || DEFAULT_ICON;
 
           return (
             <div
@@ -229,7 +231,7 @@ export default function Services() {
                     )}
                     <Button variant="premium" size="premium" asChild>
                       <Link href="/contact">
-                        Discuss Your Needs
+                        {language === "ar" ? "ناقش احتياجاتك" : "Discuss Your Needs"}
                         <ArrowRight size={16} className="ml-2" />
                       </Link>
                     </Button>
@@ -239,7 +241,7 @@ export default function Services() {
                   <div className={index % 2 === 1 ? "lg:order-1" : ""}>
                     <div className="bg-card border border-border p-10">
                       <h3 className="text-sm font-sans font-semibold tracking-[0.15em] uppercase text-muted-foreground mb-8">
-                        Core Capabilities
+                        {language === "ar" ? "القدرات الأساسية" : "Core Capabilities"}
                       </h3>
                       <ul className="space-y-5">
                         {(service.capabilities || []).map((capability) => (
