@@ -20,10 +20,75 @@ const CONTENT_KEYS = [
   { key: "footer-section", label: "Footer", type: "section" },
 ];
 
+function isPlainObject(value) {
+  return value !== null && typeof value === "object" && !Array.isArray(value);
+}
+
+function setAtPath(target, path, value) {
+  if (!path.length) return;
+
+  let current = target;
+  for (let index = 0; index < path.length - 1; index += 1) {
+    const segment = path[index];
+    const nextSegment = path[index + 1];
+    if (current[segment] === undefined) {
+      current[segment] = typeof nextSegment === "number" ? [] : {};
+    }
+    current = current[segment];
+  }
+
+  current[path[path.length - 1]] = value;
+}
+
+function toReadablePath(path) {
+  return path.reduce((label, segment) => {
+    if (typeof segment === "number") {
+      return `${label}[${segment}]`;
+    }
+    return label ? `${label}.${segment}` : segment;
+  }, "");
+}
+
+function collectFields(baseValue, arabicValue, path = [], fields = []) {
+  if (typeof baseValue === "string") {
+    fields.push({
+      path,
+      label: toReadablePath(path),
+      englishValue: baseValue,
+      arabicValue: typeof arabicValue === "string" ? arabicValue : "",
+    });
+    return fields;
+  }
+
+  if (Array.isArray(baseValue)) {
+    baseValue.forEach((item, index) => {
+      collectFields(item, arabicValue?.[index], [...path, index], fields);
+    });
+    return fields;
+  }
+
+  if (isPlainObject(baseValue)) {
+    Object.entries(baseValue).forEach(([key, value]) => {
+      collectFields(value, arabicValue?.[key], [...path, key], fields);
+    });
+  }
+
+  return fields;
+}
+
+function buildArabicObject(fields) {
+  const result = {};
+  fields.forEach((field) => {
+    const value = field.arabicValue.trim();
+    if (!value) return;
+    setAtPath(result, field.path, value);
+  });
+  return result;
+}
+
 export default function ArabicTranslationsEditor() {
   const [selectedKey, setSelectedKey] = useState(CONTENT_KEYS[0].key);
-  const [englishJson, setEnglishJson] = useState("{}");
-  const [arabicJson, setArabicJson] = useState("{}");
+  const [fields, setFields] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const { toast } = useToast();
@@ -47,8 +112,8 @@ export default function ArabicTranslationsEditor() {
       const englishOnly = { ...data };
       delete englishOnly.ar;
 
-      setEnglishJson(JSON.stringify(englishOnly, null, 2));
-      setArabicJson(JSON.stringify(data.ar || {}, null, 2));
+      const existingArabic = data.ar || {};
+      setFields(collectFields(englishOnly, existingArabic));
     } catch (error) {
       toast({
         title: "Error",
@@ -63,7 +128,7 @@ export default function ArabicTranslationsEditor() {
   const saveTranslation = async () => {
     setIsSaving(true);
     try {
-      const parsedArabic = JSON.parse(arabicJson || "{}");
+      const parsedArabic = buildArabicObject(fields);
 
       const response = await fetch("/api/content", {
         method: "POST",
@@ -103,7 +168,7 @@ export default function ArabicTranslationsEditor() {
       <div className="space-y-2">
         <h3 className="text-lg font-semibold">Arabic Translation Manager</h3>
         <p className="text-sm text-muted-foreground">
-          Edit the Arabic content inside the `ar` object. Keep the same structure as English.
+          Translate each field directly. No JSON editing is required.
         </p>
       </div>
 
@@ -127,19 +192,34 @@ export default function ArabicTranslationsEditor() {
           <Loader2 className="h-6 w-6 animate-spin" />
         </div>
       ) : (
-        <div className="grid lg:grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <Label>English Structure (read-only)</Label>
-            <Textarea value={englishJson} readOnly rows={18} className="font-mono text-xs" />
+        <div className="space-y-4">
+          <div className="space-y-4 max-h-[70vh] overflow-auto pr-1">
+            {fields.map((field, index) => (
+              <div key={`${field.label}-${index}`} className="space-y-2 border border-border rounded-md p-3">
+                <Label>{field.label}</Label>
+                <Textarea value={field.englishValue} readOnly rows={2} className="text-xs" />
+                <Textarea
+                  value={field.arabicValue}
+                  onChange={(event) => {
+                    const nextValue = event.target.value;
+                    setFields((previous) =>
+                      previous.map((item, itemIndex) =>
+                        itemIndex === index ? { ...item, arabicValue: nextValue } : item
+                      )
+                    );
+                  }}
+                  rows={2}
+                  placeholder="Write simple Arabic translation"
+                  className="text-sm"
+                />
+              </div>
+            ))}
+            {!fields.length ? (
+              <p className="text-sm text-muted-foreground">No translatable text found for this section.</p>
+            ) : null}
           </div>
-          <div className="space-y-2">
-            <Label>Arabic JSON (saved as `ar`)</Label>
-            <Textarea
-              value={arabicJson}
-              onChange={(e) => setArabicJson(e.target.value)}
-              rows={18}
-              className="font-mono text-xs"
-            />
+          <div className="text-xs text-muted-foreground">
+            Empty Arabic fields are skipped and English text will be used as fallback.
           </div>
         </div>
       )}
