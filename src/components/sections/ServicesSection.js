@@ -72,6 +72,7 @@ const ServicesSection = () => {
               subtitle: ar.subtitle || localizedFallback?.subtitle || service.subtitle,
               description: ar.description || localizedFallback?.description || service.description,
               capabilities:
+              
                 Array.isArray(ar.capabilities) && ar.capabilities.length
                   ? ar.capabilities
                   : Array.isArray(localizedFallback?.capabilities)
