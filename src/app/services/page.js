@@ -26,7 +26,7 @@ const defaultPageContent = {
     buttonText: "Schedule a Consultation",
   },
   discussButtonText: "Discuss Your Needs",
-  coreCapabilitiesTitle: "Core Capabilities",
+  capabilitiesLabel: "Core Capabilities",
 };
 
 // Default services list used as a fallback when API has no data
@@ -98,8 +98,6 @@ export default function Services() {
   const displayContent = pageContent || defaultPageContent;
   const hero = displayContent.hero || defaultPageContent.hero;
   const cta = displayContent.cta || defaultPageContent.cta;
-  const discussButtonText = displayContent.discussButtonText ?? defaultPageContent.discussButtonText;
-  const coreCapabilitiesTitle = displayContent.coreCapabilitiesTitle ?? defaultPageContent.coreCapabilitiesTitle;
 
   // Split hero title on "\n" so editors can control line breaks
   const heroTitleLines =
@@ -235,7 +233,7 @@ export default function Services() {
                     )}
                     <Button variant="premium" size="premium" asChild>
                       <Link href="/contact">
-                        {discussButtonText}
+                        {displayContent.discussButtonText}
                         <ArrowRight size={16} className="ml-2" />
                       </Link>
                     </Button>
@@ -245,7 +243,7 @@ export default function Services() {
                   <div className={index % 2 === 1 ? "lg:order-1" : ""}>
                     <div className="bg-card border border-border p-10">
                       <h3 className="text-sm font-sans font-semibold tracking-[0.15em] uppercase text-muted-foreground mb-8">
-                        {coreCapabilitiesTitle}
+                        {displayContent.capabilitiesLabel}
                       </h3>
                       <ul className="space-y-5">
                         {(service.capabilities || []).map((capability) => (

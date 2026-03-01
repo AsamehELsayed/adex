@@ -8,13 +8,14 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/contexts/language-context";
+import { localizeContent } from "@/lib/localization";
 
-const navLinks = [
-  { name: "Home", nameAr: "الرئيسية", path: "/" },
-  { name: "About", nameAr: "من نحن", path: "/about" },
-  { name: "Services", nameAr: "الخدمات", path: "/services" },
-  { name: "Vision", nameAr: "الرؤية", path: "/vision" },
-  { name: "Contact", nameAr: "اتصل بنا", path: "/contact" },
+const defaultNavLinks = [
+  { name: "Home", path: "/" },
+  { name: "About", path: "/about" },
+  { name: "Services", path: "/services" },
+  { name: "Vision", path: "/vision" },
+  { name: "Contact", path: "/contact" },
 ];
 
 const Header = () => {
@@ -23,8 +24,29 @@ const Header = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { language, toggleLanguage } = useLanguage();
 
+  const [headerContent, setHeaderContent] = useState({
+    navLinks: defaultNavLinks,
+    ctaText: "Get in Touch",
+  });
+
+  useEffect(() => {
+    const loadHeader = async () => {
+      try {
+        const res = await fetch("/api/content?key=header-section");
+        const json = await res.json();
+        if (json.success && json.data.length > 0) {
+          setHeaderContent((prev) => ({ ...prev, ...json.data[0].data }));
+        }
+      } catch (_) {}
+    };
+    loadHeader();
+  }, []);
+
+  const display = localizeContent(headerContent, language) || headerContent;
+  const navLinks = display.navLinks || defaultNavLinks;
+
   const t = {
-    cta: language === "ar" ? "تواصل معنا" : "Get in Touch",
+    cta: display.ctaText,
     toggle: language === "ar" ? "EN" : "AR",
   };
 
@@ -93,7 +115,7 @@ const Header = () => {
                     : "text-muted-foreground hover:text-foreground"
                 }`}
               >
-                {language === "ar" ? link.nameAr || link.name : link.name}
+                {link.name}
                 {pathname === link.path && (
                   <motion.span
                     layoutId="underline"
@@ -206,7 +228,7 @@ const Header = () => {
                                 : "text-muted-foreground hover:text-foreground hover:bg-muted/30"
                             }`}
                           >
-                            {language === "ar" ? link.nameAr || link.name : link.name}
+                            {link.name}
                             {isActive && (
                               <motion.div
                                 layoutId="mobileActiveIndicator"

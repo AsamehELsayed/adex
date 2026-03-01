@@ -13,6 +13,7 @@ export default function ServicesEditor() {
     label: "Our Expertise",
     title: "Comprehensive Solutions for\nComplex Challenges",
     description: "We deliver end-to-end consulting services that address your most pressing business challenges and unlock new opportunities for growth.",
+    learnMoreText: "Learn More",
     services: [
       { title: "Strategy Consulting", description: "Define market-winning strategies that position your organization for sustainable growth and competitive advantage." },
       { title: "Business Transformation", description: "Navigate complex change initiatives with confidence. We guide organizations through digital, cultural, and operational transformations." },
@@ -128,6 +129,15 @@ export default function ServicesEditor() {
             value={content.description}
             onChange={(e) => setContent({ ...content, description: e.target.value })}
             rows={3}
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Label>Learn More Button Text</Label>
+          <Input
+            value={content.learnMoreText}
+            onChange={(e) => setContent({ ...content, learnMoreText: e.target.value })}
+            placeholder="Learn More"
           />
         </div>
 

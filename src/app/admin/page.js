@@ -32,6 +32,7 @@ import ServicesPageEditor from "@/components/admin/ServicesPageEditor";
 import VisionPageEditor from "@/components/admin/VisionPageEditor";
 import ImageManager from "@/components/admin/ImageManager";
 import FooterEditor from "@/components/admin/FooterEditor";
+import HeaderEditor from "@/components/admin/HeaderEditor";
 import ArabicTranslationsEditor from "@/components/admin/ArabicTranslationsEditor";
 
 export default function AdminDashboard() {
@@ -158,6 +159,7 @@ export default function AdminDashboard() {
             <div className="bg-card border border-border p-6">
               <h2 className="text-xl font-semibold mb-6">Home Page Content</h2>
               <div className="space-y-8">
+                <HeaderEditor />
                 <HeroEditor />
                 <AboutEditor />
                 <ServicesEditor />

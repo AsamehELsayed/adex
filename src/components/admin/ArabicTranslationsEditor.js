@@ -8,6 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Loader2, Save } from "lucide-react";
 
 const CONTENT_KEYS = [
+  { key: "header-section", label: "Header / Navigation", type: "section" },
   { key: "hero-section", label: "Home - Hero", type: "section" },
   { key: "about-section", label: "Home - About", type: "section" },
   { key: "services-section", label: "Home - Services", type: "section" },

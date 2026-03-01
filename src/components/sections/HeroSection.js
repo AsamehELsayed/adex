@@ -14,9 +14,10 @@ const HeroSection = () => {
     description: "We partner with visionary leaders to transform ambitious strategies into measurable outcomes. Your success is our commitment.",
     primaryButton: "Start a Conversation",
     secondaryButton: "Explore Services",
+    scrollText: "Scroll",
   };
 
-  const { content, isLoading, language } = useLocalizedContent("hero-section", defaultContent);
+  const { content, isLoading } = useLocalizedContent("hero-section", defaultContent);
   const displayContent = content || defaultContent;
 
   // Split title by \n for line breaks
@@ -119,7 +120,7 @@ const HeroSection = () => {
       >
         <div className="flex flex-col items-center gap-3">
           <span className="text-xs tracking-widest uppercase text-muted-foreground">
-            {language === "ar" ? "مرر" : "Scroll"}
+            {displayContent.scrollText}
           </span>
           <div className="w-px h-12 bg-gradient-to-b from-muted-foreground to-transparent" />
         </div>

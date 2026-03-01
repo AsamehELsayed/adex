@@ -21,7 +21,7 @@ export default function ServicesPageEditor() {
       buttonText: "Schedule a Consultation",
     },
     discussButtonText: "Discuss Your Needs",
-    coreCapabilitiesTitle: "Core Capabilities",
+    capabilitiesLabel: "Core Capabilities",
   });
   const [isLoading, setIsLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -118,6 +118,29 @@ export default function ServicesPageEditor() {
           </div>
         </div>
 
+        {/* UI Labels */}
+        <div className="space-y-4 p-4 bg-secondary rounded-lg">
+          <h4 className="font-semibold">Service Card Labels</h4>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label>Discuss Button Text</Label>
+              <Input
+                value={content.discussButtonText}
+                onChange={(e) => setContent({ ...content, discussButtonText: e.target.value })}
+                placeholder="Discuss Your Needs"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>Capabilities Section Label</Label>
+              <Input
+                value={content.capabilitiesLabel}
+                onChange={(e) => setContent({ ...content, capabilitiesLabel: e.target.value })}
+                placeholder="Core Capabilities"
+              />
+            </div>
+          </div>
+        </div>
+
         {/* CTA Section */}
         <div className="space-y-4 p-4 bg-secondary rounded-lg">
           <h4 className="font-semibold">CTA Section</h4>
@@ -142,28 +165,6 @@ export default function ServicesPageEditor() {
               <Input
                 value={content.cta.buttonText}
                 onChange={(e) => setContent({ ...content, cta: { ...content.cta, buttonText: e.target.value } })}
-              />
-            </div>
-          </div>
-        </div>
-
-        <div className="space-y-4 p-4 bg-secondary rounded-lg">
-          <h4 className="font-semibold">Service Cards</h4>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label>Discuss button text (per service)</Label>
-              <Input
-                value={content.discussButtonText ?? "Discuss Your Needs"}
-                onChange={(e) => setContent({ ...content, discussButtonText: e.target.value })}
-                placeholder="Discuss Your Needs"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label>Core Capabilities heading</Label>
-              <Input
-                value={content.coreCapabilitiesTitle ?? "Core Capabilities"}
-                onChange={(e) => setContent({ ...content, coreCapabilitiesTitle: e.target.value })}
-                placeholder="Core Capabilities"
               />
             </div>
           </div>

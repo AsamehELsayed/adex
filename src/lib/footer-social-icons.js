@@ -1,5 +1,6 @@
 /**
  * Social media icon options for footer.
+ * All social/brand icons available in lucide-react.
  * Keys are lowercase; Footer uses them via getSocialIcon(link.icon).
  */
 import {
@@ -9,6 +10,9 @@ import {
   Facebook,
   Youtube,
   Github,
+  Dribbble,
+  Slack,
+  Twitch,
 } from "lucide-react";
 
 export const socialIconMap = {
@@ -18,6 +22,9 @@ export const socialIconMap = {
   facebook: Facebook,
   youtube: Youtube,
   github: Github,
+  dribbble: Dribbble,
+  slack: Slack,
+  twitch: Twitch,
 };
 
 export const SOCIAL_ICON_OPTIONS = [
@@ -27,4 +34,7 @@ export const SOCIAL_ICON_OPTIONS = [
   { value: "facebook", label: "Facebook" },
   { value: "youtube", label: "YouTube" },
   { value: "github", label: "GitHub" },
+  { value: "dribbble", label: "Dribbble" },
+  { value: "slack", label: "Slack" },
+  { value: "twitch", label: "Twitch" },
 ];

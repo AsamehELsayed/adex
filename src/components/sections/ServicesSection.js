@@ -140,7 +140,7 @@ const ServicesSection = () => {
                       href="/services"
                       className="inline-flex items-center gap-2 text-sm text-foreground hover:text-accent transition-colors duration-300 group/link"
                     >
-                      {displayContent.learnMoreText ?? (language === "ar" ? "اعرف المزيد" : "Learn More")}
+                      {displayContent.learnMoreText}
                       <ArrowRight
                         size={14}
                         className="group-hover/link:translate-x-1 transition-transform duration-300"

@@ -16,6 +16,7 @@ export default function HeroEditor() {
     description: "We partner with visionary leaders to transform ambitious strategies into measurable outcomes. Your success is our commitment.",
     primaryButton: "Start a Conversation",
     secondaryButton: "Explore Services",
+    scrollText: "Scroll",
     backgroundImage: "/hero-consulting.jpg",
   });
   const [isLoading, setIsLoading] = useState(false);
@@ -130,6 +131,15 @@ export default function HeroEditor() {
               placeholder="Explore Services"
             />
           </div>
+        </div>
+
+        <div className="space-y-2">
+          <Label>Scroll Indicator Text</Label>
+          <Input
+            value={content.scrollText}
+            onChange={(e) => setContent({ ...content, scrollText: e.target.value })}
+            placeholder="Scroll"
+          />
         </div>
 
         <div className="space-y-2">
