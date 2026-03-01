@@ -21,6 +21,7 @@ export default function CTAEditor() {
   const [isSaving, setIsSaving] = useState(false);
   const { toast } = useToast();
 
+  
   useEffect(() => {
     loadContent();
   }, []);
