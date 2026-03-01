@@ -25,10 +25,14 @@ export default function ServicesPageEditor() {
   });
   const [isLoading, setIsLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [services, setServices] = useState([]);
+  const [isServicesLoading, setIsServicesLoading] = useState(false);
+  const [isServicesSaving, setIsServicesSaving] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
     loadContent();
+    loadServices();
   }, []);
 
   const loadContent = async () => {
@@ -76,6 +80,90 @@ export default function ServicesPageEditor() {
       });
     } finally {
       setIsSaving(false);
+    }
+  };
+
+  const loadServices = async () => {
+    setIsServicesLoading(true);
+    try {
+      const response = await fetch("/api/services");
+      const result = await response.json();
+      if (result.success && Array.isArray(result.data)) {
+        const mappedServices = result.data.map((service) => ({
+          id: service.id,
+          title: service.title || "",
+          subtitle: service.subtitle || "",
+          description: service.description || "",
+          capabilities: Array.isArray(service.capabilities) ? service.capabilities : [],
+          ar: {
+            title: service.serviceData?.ar?.title || "",
+            subtitle: service.serviceData?.ar?.subtitle || "",
+            description: service.serviceData?.ar?.description || "",
+            capabilities: Array.isArray(service.serviceData?.ar?.capabilities)
+              ? service.serviceData.ar.capabilities
+              : [],
+          },
+        }));
+        setServices(mappedServices);
+      }
+    } catch (error) {
+      console.error("Error loading services:", error);
+    } finally {
+      setIsServicesLoading(false);
+    }
+  };
+
+  const updateServiceArabicField = (index, field, value) => {
+    setServices((previous) =>
+      previous.map((service, serviceIndex) =>
+        serviceIndex === index
+          ? { ...service, ar: { ...service.ar, [field]: value } }
+          : service
+      )
+    );
+  };
+
+  const handleSaveServiceTranslations = async () => {
+    setIsServicesSaving(true);
+    try {
+      const saveRequests = services.map((service) =>
+        fetch(`/api/services/${service.id}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            serviceData: {
+              ar: {
+                title: service.ar.title,
+                subtitle: service.ar.subtitle,
+                description: service.ar.description,
+                capabilities: service.ar.capabilities,
+              },
+            },
+          }),
+        })
+      );
+
+      const responses = await Promise.all(saveRequests);
+      const results = await Promise.all(responses.map((response) => response.json()));
+      const failedSave = results.find((result) => !result.success);
+
+      if (failedSave) {
+        throw new Error(failedSave.error || "Failed to save service translations");
+      }
+
+      toast({
+        title: "Saved",
+        description: "Service translations saved successfully",
+      });
+      loadServices();
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to save service translations",
+        variant: "destructive",
+      });
+    } finally {
+      setIsServicesSaving(false);
     }
   };
 
@@ -168,6 +256,107 @@ export default function ServicesPageEditor() {
               />
             </div>
           </div>
+        </div>
+
+        {/* Services Arabic Translation */}
+        <div className="space-y-4 p-4 bg-secondary rounded-lg">
+          <h4 className="font-semibold">Service Cards Arabic Translation</h4>
+          <p className="text-sm text-muted-foreground">
+            Service cards on the Services page come from Services Management. Translate them here.
+          </p>
+          {isServicesLoading ? (
+            <div className="flex items-center justify-center p-6">
+              <Loader2 className="h-6 w-6 animate-spin" />
+            </div>
+          ) : services.length ? (
+            <div className="space-y-4">
+              {services.map((service, index) => (
+                <div key={service.id} className="space-y-3 p-4 border border-border rounded-md bg-background">
+                  <h5 className="font-medium">Service {index + 1}</h5>
+                  <div className="space-y-2">
+                    <Label>English Title</Label>
+                    <Input value={service.title} readOnly />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Arabic Title</Label>
+                    <Input
+                      dir="rtl"
+                      value={service.ar.title}
+                      onChange={(event) => updateServiceArabicField(index, "title", event.target.value)}
+                      placeholder="عنوان الخدمة"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>English Subtitle</Label>
+                    <Input value={service.subtitle} readOnly />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Arabic Subtitle</Label>
+                    <Input
+                      dir="rtl"
+                      value={service.ar.subtitle}
+                      onChange={(event) => updateServiceArabicField(index, "subtitle", event.target.value)}
+                      placeholder="العنوان الفرعي"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>English Description</Label>
+                    <Textarea value={service.description} readOnly rows={3} />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Arabic Description</Label>
+                    <Textarea
+                      dir="rtl"
+                      value={service.ar.description}
+                      onChange={(event) => updateServiceArabicField(index, "description", event.target.value)}
+                      rows={3}
+                      placeholder="وصف الخدمة"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>English Capabilities (one per line)</Label>
+                    <Textarea value={service.capabilities.join("\n")} readOnly rows={4} />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Arabic Capabilities (one per line)</Label>
+                    <Textarea
+                      dir="rtl"
+                      value={service.ar.capabilities.join("\n")}
+                      onChange={(event) =>
+                        updateServiceArabicField(
+                          index,
+                          "capabilities",
+                          event.target.value
+                            .split("\n")
+                            .map((item) => item.trim())
+                            .filter(Boolean)
+                        )
+                      }
+                      rows={4}
+                      placeholder={"ميزة 1\nميزة 2\nميزة 3"}
+                    />
+                  </div>
+                </div>
+              ))}
+              <Button onClick={handleSaveServiceTranslations} disabled={isServicesSaving}>
+                {isServicesSaving ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Saving Service Translations...
+                  </>
+                ) : (
+                  <>
+                    <Save className="mr-2 h-4 w-4" />
+                    Save Service Translations
+                  </>
+                )}
+              </Button>
+            </div>
+          ) : (
+            <p className="text-sm text-muted-foreground">
+              No services found. Add services in Services Management first.
+            </p>
+          )}
         </div>
       </div>
 
