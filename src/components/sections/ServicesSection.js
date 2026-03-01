@@ -56,19 +56,27 @@ const ServicesSection = () => {
         const data = await response.json();
         if (data.success && data.data.length > 0) {
           // Use services from API, limit to 4 for home page
-          const mapped = data.data.slice(0, 4).map((service) => {
-            const ar = service.serviceData?.ar || {};
+          const mapped = data.data.slice(0, 4).map((service, index) => {
             if (language !== "ar") {
               return service;
             }
+
+            const ar = service.serviceData?.ar || {};
+            const localizedFallback = Array.isArray(displayContent.services)
+              ? displayContent.services[index]
+              : null;
+
             return {
               ...service,
-              title: ar.title || service.title,
-              subtitle: ar.subtitle || service.subtitle,
-              description: ar.description || service.description,
-              capabilities: Array.isArray(ar.capabilities)
-                ? ar.capabilities
-                : service.capabilities,
+              title: ar.title || localizedFallback?.title || service.title,
+              subtitle: ar.subtitle || localizedFallback?.subtitle || service.subtitle,
+              description: ar.description || localizedFallback?.description || service.description,
+              capabilities:
+                Array.isArray(ar.capabilities) && ar.capabilities.length
+                  ? ar.capabilities
+                  : Array.isArray(localizedFallback?.capabilities)
+                    ? localizedFallback.capabilities
+                    : service.capabilities,
             };
           });
           setServices(mapped);
