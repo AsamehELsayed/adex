@@ -8,7 +8,13 @@ function mergeLocalized(baseValue, localizedValue) {
   }
 
   if (Array.isArray(baseValue) && Array.isArray(localizedValue)) {
-    return localizedValue;
+    // Merge by index so we keep base structure (e.g. paths) and only override translated fields
+    const len = Math.max(baseValue.length, localizedValue.length);
+    const result = [];
+    for (let i = 0; i < len; i++) {
+      result.push(mergeLocalized(baseValue[i], localizedValue[i]));
+    }
+    return result;
   }
 
   if (isObject(baseValue) && isObject(localizedValue)) {

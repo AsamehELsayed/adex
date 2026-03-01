@@ -7,11 +7,21 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { Save, Loader2, Plus, Trash2 } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { SOCIAL_ICON_OPTIONS, socialIconMap } from "@/lib/footer-social-icons";
 
 export default function FooterEditor() {
   const [content, setContent] = useState({
     brandName: "Adex",
     brandDescription: "Strategic consulting for enterprises ready to transform their vision into measurable results. We partner with leaders who demand excellence.",
+    navigateLabel: "Navigate",
+    contactLabel: "Contact",
     socialLinks: [
       { name: "LinkedIn", url: "#", icon: "linkedin" },
       { name: "Twitter", url: "#", icon: "twitter" },
@@ -179,6 +189,25 @@ export default function FooterEditor() {
               rows={3}
             />
           </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label>Navigate heading (e.g. &quot;Navigate&quot;)</Label>
+              <Input
+                value={content.navigateLabel ?? "Navigate"}
+                onChange={(e) => setContent({ ...content, navigateLabel: e.target.value })}
+                placeholder="Navigate"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>Contact heading (e.g. &quot;Contact&quot;)</Label>
+              <Input
+                value={content.contactLabel ?? "Contact"}
+                onChange={(e) => setContent({ ...content, contactLabel: e.target.value })}
+                placeholder="Contact"
+              />
+            </div>
+          </div>
         </div>
 
         {/* Social Links */}
@@ -209,13 +238,52 @@ export default function FooterEditor() {
                   placeholder="https://..."
                 />
               </div>
-              <div className="flex-1 space-y-2">
+              <div className="flex-1 space-y-2 min-w-[140px]">
                 <Label>Icon</Label>
-                <Input
-                  value={link.icon}
-                  onChange={(e) => updateSocialLink(index, "icon", e.target.value)}
-                  placeholder="linkedin"
-                />
+                <Select
+                  value={
+                    SOCIAL_ICON_OPTIONS.some(
+                      (o) => o.value === (link.icon || "").toLowerCase()
+                    )
+                      ? (link.icon || "linkedin").toLowerCase()
+                      : "linkedin"
+                  }
+                  onValueChange={(value) => updateSocialLink(index, "icon", value)}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Pick icon">
+                      {(() => {
+                        const key =
+                          SOCIAL_ICON_OPTIONS.some(
+                            (o) => o.value === (link.icon || "").toLowerCase()
+                          )
+                            ? (link.icon || "linkedin").toLowerCase()
+                            : "linkedin";
+                        const opt = SOCIAL_ICON_OPTIONS.find((o) => o.value === key);
+                        const IconComponent = socialIconMap[key];
+                        return opt ? (
+                          <span className="flex items-center gap-2">
+                            {IconComponent && <IconComponent className="h-4 w-4" />}
+                            {opt.label}
+                          </span>
+                        ) : null;
+                      })()}
+                    </SelectValue>
+                  </SelectTrigger>
+                  <SelectContent>
+                    {SOCIAL_ICON_OPTIONS.map((opt) => {
+                      const IconComponent = socialIconMap[opt.value];
+                      return (
+                        <SelectItem key={opt.value} value={opt.value}>
+                          <span className="flex items-center gap-2">
+                            {IconComponent && <IconComponent className="h-4 w-4" />}
+                            {opt.label}
+                          </span>
+                        </SelectItem>
+                      );
+                    })}
+                  </SelectContent>
+                </Select>
               </div>
               <Button
                 size="sm"

@@ -19,6 +19,7 @@ const ServicesSection = () => {
     label: "Our Expertise",
     title: "Comprehensive Solutions for\nComplex Challenges",
     description: "We deliver end-to-end consulting services that address your most pressing business challenges and unlock new opportunities for growth.",
+    learnMoreText: "Learn More",
     services: [
       {
         icon: "TrendingUp",
@@ -139,7 +140,7 @@ const ServicesSection = () => {
                       href="/services"
                       className="inline-flex items-center gap-2 text-sm text-foreground hover:text-accent transition-colors duration-300 group/link"
                     >
-                      {language === "ar" ? "اعرف المزيد" : "Learn More"}
+                      {displayContent.learnMoreText ?? (language === "ar" ? "اعرف المزيد" : "Learn More")}
                       <ArrowRight
                         size={14}
                         className="group-hover/link:translate-x-1 transition-transform duration-300"
