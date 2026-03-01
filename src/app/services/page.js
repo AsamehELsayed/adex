@@ -106,7 +106,7 @@ export default function Services() {
       : ["Comprehensive Solutions", "for Complex Challenges"];
 
   // Services list – prefer API data, fall back to defaults
-  const [services, setServices] = useState(defaultServices);
+  const [services, setServices] = useState([]);
 
   useEffect(() => {
     const fetchServices = async () => {
@@ -136,17 +136,16 @@ export default function Services() {
             };
           });
           setServices(mapped);
-        } else {
-          setServices(defaultServices);
         }
       } catch (error) {
         console.error("Error fetching services:", error);
-        setServices(defaultServices);
       }
     };
 
     fetchServices();
   }, [language]);
+
+  const servicesToDisplay = services.length > 0 ? services : defaultServices;
 
   return (
     <Layout>
@@ -189,7 +188,7 @@ export default function Services() {
 
       {/* Services */}
       <section className="pb-20">
-        {services.map((service, index) => {
+        {servicesToDisplay.map((service, index) => {
           const IconComponent =
             typeof service.icon === "string"
               ? iconMap[service.icon] || DEFAULT_ICON

@@ -72,8 +72,10 @@ export async function POST(request) {
     if (content) {
       // Update existing content
       content.data = { ...content.data, ...data };
+      content.changed('data', true);
       if (metadata) {
         content.metadata = { ...content.metadata, ...metadata };
+        content.changed('metadata', true);
       }
       if (type) {
         content.type = type;

@@ -8,7 +8,11 @@ function mergeLocalized(baseValue, localizedValue) {
   }
 
   if (Array.isArray(baseValue) && Array.isArray(localizedValue)) {
-    return localizedValue;
+    return baseValue.map((item, index) => {
+      const locItem = localizedValue[index];
+      if (locItem === undefined || locItem === null) return item;
+      return mergeLocalized(item, locItem);
+    });
   }
 
   if (isObject(baseValue) && isObject(localizedValue)) {

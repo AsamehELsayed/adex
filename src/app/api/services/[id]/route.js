@@ -59,12 +59,15 @@ export async function PUT(request, { params }) {
     // Update JSON fields
     if (body.capabilities) {
       service.capabilities = body.capabilities;
+      service.changed('capabilities', true);
     }
     if (body.serviceData) {
       service.serviceData = { ...service.serviceData, ...body.serviceData };
+      service.changed('serviceData', true);
     }
     if (body.metadata) {
       service.metadata = { ...service.metadata, ...body.metadata };
+      service.changed('metadata', true);
     }
 
     // Update other fields
