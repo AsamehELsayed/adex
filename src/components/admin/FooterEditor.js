@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { Save, Loader2, Plus, Trash2 } from "lucide-react";
+import SocialIconSelect from "@/components/admin/SocialIconSelect";
 
 export default function FooterEditor() {
   const [content, setContent] = useState({
@@ -212,11 +213,10 @@ export default function FooterEditor() {
                 />
               </div>
               <div className="flex-1 space-y-2">
-                <Label>Icon</Label>
-                <Input
+                <SocialIconSelect
+                  label="Icon"
                   value={link.icon}
-                  onChange={(e) => updateSocialLink(index, "icon", e.target.value)}
-                  placeholder="linkedin"
+                  onChange={(icon) => updateSocialLink(index, "icon", icon)}
                 />
               </div>
               <Button

@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { ArrowUpRight, Linkedin, Twitter } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
+import { socialIconMap } from "@/lib/footer-social-icons";
 import { useLanguage } from "@/contexts/language-context";
 import { localizeContent } from "@/lib/localization";
 
@@ -53,11 +54,8 @@ const Footer = () => {
   };
 
   const getSocialIcon = (iconName) => {
-    const icons = {
-      linkedin: Linkedin,
-      twitter: Twitter,
-    };
-    return icons[iconName?.toLowerCase()] || Linkedin;
+    const key = iconName?.toLowerCase();
+    return socialIconMap[key] || socialIconMap.linkedin;
   };
 
   const displayContent = localizeContent(content, language) || content;
