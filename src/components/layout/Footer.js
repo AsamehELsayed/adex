@@ -149,7 +149,7 @@ const Footer = () => {
                   href={`tel:${(displayContent.contactInfo?.phone || "").replace(/\s/g, "")}`}
                   className="hover:text-accent transition-colors duration-300"
                 >
-                  {displayContent.contactInfo?.phone}
+                  <span dir="ltr">{displayContent.contactInfo?.phone}</span>
                 </a>
               </p>
             </address>
@@ -159,7 +159,7 @@ const Footer = () => {
         {/* Bottom Bar */}
         <div className="mt-16 pt-8 border-t border-primary-foreground/10 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-primary-foreground/50 text-sm">
-            © {currentYear} {displayContent.copyrightText}
+            <span dir="ltr">© {currentYear}</span> {displayContent.copyrightText}
           </p>
           <div className="flex gap-8 text-sm text-primary-foreground/50">
             {(displayContent.bottomLinks || []).map((link, index) => (
