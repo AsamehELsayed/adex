@@ -21,6 +21,30 @@ const CONTENT_KEYS = [
   { key: "footer-section", label: "Footer", type: "section" },
 ];
 
+// Default content when DB has no row yet (e.g. header uses in-code defaults)
+const DEFAULT_CONTENT_BY_KEY = {
+  "header-section": {
+    navLinks: [
+      { name: "Home", path: "/" },
+      { name: "About", path: "/about" },
+      { name: "Services", path: "/services" },
+      { name: "Vision", path: "/vision" },
+      { name: "Contact", path: "/contact" },
+    ],
+    ctaText: "Get in Touch",
+  },
+};
+  { key: "about-section", label: "Home - About", type: "section" },
+  { key: "services-section", label: "Home - Services", type: "section" },
+  { key: "why-choose-us-section", label: "Home - Why Choose Us", type: "section" },
+  { key: "cta-section", label: "Home - CTA", type: "section" },
+  { key: "about-page", label: "About Page", type: "page" },
+  { key: "services-page", label: "Services Page", type: "page" },
+  { key: "vision-page", label: "Vision Page", type: "page" },
+  { key: "contact-page", label: "Contact Page", type: "page" },
+  { key: "footer-section", label: "Footer", type: "section" },
+];
+
 function isPlainObject(value) {
   return value !== null && typeof value === "object" && !Array.isArray(value);
 }
@@ -109,7 +133,12 @@ export default function ArabicTranslationsEditor() {
     try {
       const response = await fetch(`/api/content?key=${selectedKey}`);
       const result = await response.json();
-      const data = result?.success && result.data?.[0]?.data ? result.data[0].data : {};
+      let data = result?.success && result.data?.[0]?.data ? result.data[0].data : {};
+      // Use default content when DB has no row (e.g. header nav uses in-code defaults)
+      const defaultContent = DEFAULT_CONTENT_BY_KEY[selectedKey];
+      if (Object.keys(data).length === 0 && defaultContent) {
+        data = { ...defaultContent };
+      }
       const englishOnly = { ...data };
       delete englishOnly.ar;
 
@@ -130,6 +159,12 @@ export default function ArabicTranslationsEditor() {
     setIsSaving(true);
     try {
       const parsedArabic = buildArabicObject(fields);
+      const defaultContent = DEFAULT_CONTENT_BY_KEY[selectedKey];
+      // When saving header-section (or other keys with defaults), include base content if we're only saving ar (so DB has both en + ar)
+      const payload =
+        defaultContent && Object.keys(parsedArabic).length > 0
+          ? { ...defaultContent, ar: parsedArabic }
+          : { ar: parsedArabic };
 
       const response = await fetch("/api/content", {
         method: "POST",
@@ -137,7 +172,7 @@ export default function ArabicTranslationsEditor() {
         body: JSON.stringify({
           key: selectedKey,
           type: selectedConfig.type,
-          data: { ar: parsedArabic },
+          data: payload,
         }),
       });
 

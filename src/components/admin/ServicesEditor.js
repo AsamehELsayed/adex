@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { Save, Loader2, Plus, Trash2 } from "lucide-react";
+import IconSelect from "@/components/admin/IconSelect";
 
 export default function ServicesEditor() {
   const [content, setContent] = useState({
@@ -15,10 +16,10 @@ export default function ServicesEditor() {
     description: "We deliver end-to-end consulting services that address your most pressing business challenges and unlock new opportunities for growth.",
     learnMoreText: "Learn More",
     services: [
-      { title: "Strategy Consulting", description: "Define market-winning strategies that position your organization for sustainable growth and competitive advantage." },
-      { title: "Business Transformation", description: "Navigate complex change initiatives with confidence. We guide organizations through digital, cultural, and operational transformations." },
-      { title: "Operational Excellence", description: "Optimize processes, reduce costs, and enhance efficiency across your entire value chain without compromising quality." },
-      { title: "Growth & Expansion", description: "Enter new markets, launch new products, and scale your business with data-driven strategies and proven frameworks." },
+      { icon: "TrendingUp", title: "Strategy Consulting", description: "Define market-winning strategies that position your organization for sustainable growth and competitive advantage." },
+      { icon: "RefreshCw", title: "Business Transformation", description: "Navigate complex change initiatives with confidence. We guide organizations through digital, cultural, and operational transformations." },
+      { icon: "Settings", title: "Operational Excellence", description: "Optimize processes, reduce costs, and enhance efficiency across your entire value chain without compromising quality." },
+      { icon: "Expand", title: "Growth & Expansion", description: "Enter new markets, launch new products, and scale your business with data-driven strategies and proven frameworks." },
     ],
   });
   const [isLoading, setIsLoading] = useState(false);
@@ -80,7 +81,7 @@ export default function ServicesEditor() {
   const addService = () => {
     setContent({
       ...content,
-      services: [...content.services, { title: "", description: "" }],
+      services: [...content.services, { icon: "", title: "", description: "" }],
     });
   };
 
@@ -163,6 +164,11 @@ export default function ServicesEditor() {
                   <Trash2 className="h-4 w-4" />
                 </Button>
               </div>
+              <IconSelect
+                label="Icon"
+                value={service.icon || ""}
+                onChange={(icon) => updateService(index, "icon", icon)}
+              />
               <Input
                 value={service.title}
                 onChange={(e) => updateService(index, "title", e.target.value)}

@@ -5,7 +5,7 @@
  */
 import {
   Linkedin,
-  Twitter,
+  X,
   Instagram,
   Facebook,
   Youtube,
@@ -17,7 +17,8 @@ import {
 
 export const socialIconMap = {
   linkedin: Linkedin,
-  twitter: Twitter,
+  twitter: X,
+  x: X,
   instagram: Instagram,
   facebook: Facebook,
   youtube: Youtube,

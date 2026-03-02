@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { Save, Loader2, Plus, Trash2 } from "lucide-react";
+import IconSelect from "@/components/admin/IconSelect";
 
 export default function WhyChooseUsEditor() {
   const [content, setContent] = useState({
@@ -14,18 +15,21 @@ export default function WhyChooseUsEditor() {
     title: "Why Leaders Choose\nto Partner With Us",
     reasons: [
       {
+        icon: "Target",
         title: "Results-Driven Approach",
         description: "Every engagement is measured by tangible outcomes. We define success metrics upfront and hold ourselves accountable to delivering measurable impact.",
         stat: "94%",
         statLabel: "Client Satisfaction",
       },
       {
+        icon: "Award",
         title: "Industry Expertise",
         description: "Our consultants bring deep domain knowledge across industries—from technology and healthcare to finance and manufacturing.",
         stat: "50+",
         statLabel: "Industries Served",
       },
       {
+        icon: "Users",
         title: "Hands-On Execution",
         description: "We don't just deliver recommendations and walk away. Our team works alongside yours to ensure successful implementation.",
         stat: "200+",
@@ -92,7 +96,7 @@ export default function WhyChooseUsEditor() {
   const addReason = () => {
     setContent({
       ...content,
-      reasons: [...content.reasons, { title: "", description: "", stat: "", statLabel: "" }],
+      reasons: [...content.reasons, { icon: "", title: "", description: "", stat: "", statLabel: "" }],
     });
   };
 
@@ -157,6 +161,11 @@ export default function WhyChooseUsEditor() {
                   <Trash2 className="h-4 w-4" />
                 </Button>
               </div>
+              <IconSelect
+                label="Icon"
+                value={reason.icon || ""}
+                onChange={(icon) => updateReason(index, "icon", icon)}
+              />
               <Input
                 value={reason.title}
                 onChange={(e) => updateReason(index, "title", e.target.value)}
