@@ -34,16 +34,6 @@ const DEFAULT_CONTENT_BY_KEY = {
     ctaText: "Get in Touch",
   },
 };
-  { key: "about-section", label: "Home - About", type: "section" },
-  { key: "services-section", label: "Home - Services", type: "section" },
-  { key: "why-choose-us-section", label: "Home - Why Choose Us", type: "section" },
-  { key: "cta-section", label: "Home - CTA", type: "section" },
-  { key: "about-page", label: "About Page", type: "page" },
-  { key: "services-page", label: "Services Page", type: "page" },
-  { key: "vision-page", label: "Vision Page", type: "page" },
-  { key: "contact-page", label: "Contact Page", type: "page" },
-  { key: "footer-section", label: "Footer", type: "section" },
-];
 
 function isPlainObject(value) {
   return value !== null && typeof value === "object" && !Array.isArray(value);
@@ -134,11 +124,15 @@ export default function ArabicTranslationsEditor() {
       const response = await fetch(`/api/content?key=${selectedKey}`);
       const result = await response.json();
       let data = result?.success && result.data?.[0]?.data ? result.data[0].data : {};
-      // Use default content when DB has no row (e.g. header nav uses in-code defaults)
       const defaultContent = DEFAULT_CONTENT_BY_KEY[selectedKey];
-      if (Object.keys(data).length === 0 && defaultContent) {
-        data = { ...defaultContent };
+      
+      // If the DB has no data OR only has the 'ar' key (missing base content), 
+      // we merge with default content to provide the translation template.
+      const hasBaseContent = Object.keys(data).filter(k => k !== 'ar').length > 0;
+      if (!hasBaseContent && defaultContent) {
+        data = { ...defaultContent, ...data };
       }
+
       const englishOnly = { ...data };
       delete englishOnly.ar;
 

@@ -232,8 +232,8 @@ export default function Services() {
                     )}
                     <Button variant="premium" size="premium" asChild>
                       <Link href="/contact">
-                        {displayContent.discussButtonText}
-                        <ArrowRight size={16} className="ml-2" />
+                        {displayContent.discussButtonText || (language === "ar" ? "ناقش احتياجاتك" : "Discuss Your Needs")}
+                        <ArrowRight size={16} className={language === "ar" ? "mr-2 rotate-180" : "ml-2"} />
                       </Link>
                     </Button>
                   </div>
@@ -242,7 +242,7 @@ export default function Services() {
                   <div className={index % 2 === 1 ? "lg:order-1" : ""}>
                     <div className="bg-card border border-border p-10">
                       <h3 className="text-sm font-sans font-semibold tracking-[0.15em] uppercase text-muted-foreground mb-8">
-                        {displayContent.capabilitiesLabel}
+                        {displayContent.capabilitiesLabel || (language === "ar" ? "القدرات الأساسية" : "Core Capabilities")}
                       </h3>
                       <ul className="space-y-5">
                         {(service.capabilities || []).map((capability) => (

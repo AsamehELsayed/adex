@@ -332,7 +332,7 @@ export default function Contact() {
                     </div>
                     <div>
                       <h4 className="font-medium mb-2">
-                        {info.address?.title || "Headquarters"}
+                        {info.address?.title || (language === "ar" ? "المقر الرئيسي" : "Headquarters")}
                       </h4>
                       <address className="not-italic text-muted-foreground leading-relaxed">
                         {info.address?.line1}
@@ -350,7 +350,7 @@ export default function Contact() {
                     </div>
                     <div>
                       <h4 className="font-medium mb-2">
-                        {info.email?.title || "Email"}
+                        {info.email?.title || (language === "ar" ? "البريد الإلكتروني" : "Email")}
                       </h4>
                       <a
                         href={`mailto:${info.email?.value || "hello@apexconsulting.com"}`}
@@ -367,13 +367,15 @@ export default function Contact() {
                     </div>
                     <div>
                       <h4 className="font-medium mb-2">
-                        {info.phone?.title || "Phone"}
+                        {info.phone?.title || (language === "ar" ? "الهاتف" : "Phone")}
                       </h4>
                       <a
-                        href={`tel:${info.phone?.value || "+12125551234"}`}
+                        href={`tel:${info.phone?.value?.replace(/\s/g, "") || "+12125551234"}`}
                         className="text-muted-foreground hover:text-accent transition-colors duration-300"
                       >
-                        {info.phone?.value || "+1 (212) 555-1234"}
+                        <span dir="ltr" className="inline-block">
+                          {info.phone?.value || "+1 (212) 555-1234"}
+                        </span>
                       </a>
                     </div>
                   </div>

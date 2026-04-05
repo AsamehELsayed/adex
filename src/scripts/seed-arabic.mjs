@@ -118,6 +118,8 @@ const contentTranslations = {
         'كل شراكة تبدأ بفهم تحدياتكم وأهدافكم. لنبدأ هذه المحادثة.',
       buttonText: 'احجز استشارة',
     },
+    discussButtonText: 'ناقش احتياجاتك',
+    capabilitiesLabel: 'القدرات الأساسية',
   },
   'vision-page': {
     hero: {
@@ -186,6 +188,16 @@ const contentTranslations = {
         title: 'الهاتف',
       },
     },
+  },
+  'header-section': {
+    navLinks: [
+      { name: 'الرئيسية', path: '/' },
+      { name: 'من نحن', path: '/about' },
+      { name: 'خدماتنا', path: '/services' },
+      { name: 'رؤيتنا', path: '/vision' },
+      { name: 'اتصل بنا', path: '/contact' },
+    ],
+    ctaText: 'تواصل معنا',
   },
   'footer-section': {
     brandDescription:

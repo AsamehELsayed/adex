@@ -18,6 +18,14 @@ const defaultNavLinks = [
   { name: "Contact", path: "/contact" },
 ];
 
+const defaultNavLinksAr = [
+  { name: "الرئيسية", path: "/" },
+  { name: "من نحن", path: "/about" },
+  { name: "خدماتنا", path: "/services" },
+  { name: "رؤيتنا", path: "/vision" },
+  { name: "اتصل بنا", path: "/contact" },
+];
+
 const Header = () => {
   const pathname = usePathname();
   const [isScrolled, setIsScrolled] = useState(false);
@@ -27,6 +35,10 @@ const Header = () => {
   const [headerContent, setHeaderContent] = useState({
     navLinks: defaultNavLinks,
     ctaText: "Get in Touch",
+    ar: {
+      navLinks: defaultNavLinksAr,
+      ctaText: "تواصل معنا",
+    },
   });
 
   useEffect(() => {
