@@ -23,15 +23,41 @@ const CONTENT_KEYS = [
 
 // Default content when DB has no row yet (e.g. header uses in-code defaults)
 const DEFAULT_CONTENT_BY_KEY = {
-  "header-section": {
+  'header-section': {
     navLinks: [
-      { name: "Home", path: "/" },
-      { name: "About", path: "/about" },
-      { name: "Services", path: "/services" },
-      { name: "Vision", path: "/vision" },
-      { name: "Contact", path: "/contact" },
+      { name: 'Home', path: '/' },
+      { name: 'About', path: '/about' },
+      { name: 'Services', path: '/services' },
+      { name: 'Vision', path: '/vision' },
+      { name: 'Contact', path: '/contact' },
     ],
-    ctaText: "Get in Touch",
+    ctaText: 'Get in Touch',
+  },
+  'contact-page': {
+    hero: { label: '', title: '', description: '' },
+    form: {
+      title: '',
+      nameLabel: '',
+      emailLabel: '',
+      companyLabel: '',
+      phoneLabel: '',
+      messageLabel: '',
+      submitButton: '',
+    },
+    info: {
+      title: '',
+      description: '',
+      address: { title: '', line1: '', line2: '', line3: '' },
+      email: { title: '' },
+      phone: { title: '' },
+      hours: '',
+    },
+  },
+  'services-page': {
+    hero: { label: '', title: '', description: '' },
+    cta: { title: '', description: '', buttonText: '' },
+    discussButtonText: '',
+    capabilitiesLabel: '',
   },
 };
 

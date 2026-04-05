@@ -220,20 +220,32 @@ export default function ContactPageEditor() {
               />
             </div>
             <div className="grid grid-cols-2 gap-3">
-              <div>
-                <Label>Email</Label>
+              <div className="space-y-2">
+                <Label>Email Label</Label>
+                <Input
+                  value={content.info.email.title}
+                  onChange={(e) => setContent({ ...content, info: { ...content.info, email: { ...content.info.email, title: e.target.value } } })}
+                  placeholder="Email Label"
+                />
+                <Label>Email Address</Label>
                 <Input
                   value={content.info.email.value}
                   onChange={(e) => setContent({ ...content, info: { ...content.info, email: { ...content.info.email, value: e.target.value } } })}
-                  placeholder="Email"
+                  placeholder="Email Address"
                 />
               </div>
-              <div>
-                <Label>Phone</Label>
+              <div className="space-y-2">
+                <Label>Phone Label</Label>
+                <Input
+                  value={content.info.phone.title}
+                  onChange={(e) => setContent({ ...content, info: { ...content.info, phone: { ...content.info.phone, title: e.target.value } } })}
+                  placeholder="Phone Label"
+                />
+                <Label>Phone Number</Label>
                 <Input
                   value={content.info.phone.value}
                   onChange={(e) => setContent({ ...content, info: { ...content.info, phone: { ...content.info.phone, value: e.target.value } } })}
-                  placeholder="Phone"
+                  placeholder="Phone Number"
                 />
               </div>
             </div>
